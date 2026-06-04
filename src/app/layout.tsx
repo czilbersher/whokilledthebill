@@ -13,7 +13,8 @@ export const metadata: Metadata = {
     "Tracking U.S. federal legislation introduced by elected officials — then abandoned in committee without a vote, a hearing, or an explanation.",
   openGraph: {
     title: "Who Killed the Bill?",
-    description: "9,799 bills died in committee in the 119th Congress. No hearing. No vote. No accountability.",
+    description:
+      "9,799 bills died in committee in the 119th Congress. No hearing. No vote. No accountability.",
     type: "website",
   },
 };
@@ -23,7 +24,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistMono.variable} h-full`}>
-      <body className="min-h-full bg-zinc-950 antialiased">{children}</body>
+      <body className="min-h-full bg-[#f8f8f6] antialiased">{children}</body>
     </html>
   );
 }
