@@ -1,6 +1,5 @@
 "use client";
 
-
 import { getCauseOfDeath } from "@/lib/causeOfDeath";
 import type { BillRow } from "@/types/db";
 
@@ -44,6 +43,16 @@ function DaysBadge({ date }: { date: string | null }) {
   );
 }
 
+function SponsorLink({ bill, name }: { bill: BillRow; name: string }) {
+  const id = bill.sponsor_bioguide_id;
+  const href = id ? `/rep/${id}` : "#";
+  return (
+    <a href={href} className="text-sm text-gray-800 font-medium hover:text-red-600 hover:underline transition-colors">
+      {name}
+    </a>
+  );
+}
+
 export default function BillCard({ bill }: { bill: BillRow }) {
   const cause       = getCauseOfDeath(bill);
   const sponsorName = (bill.sponsor_name ?? "Unknown Sponsor").replace(/^(Rep\.|Sen\.)\s/, "");
@@ -51,8 +60,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
 
   return (
     <article
-      className="bg-white rounded-md border border-gray-200 overflow-hidden
-                 flex flex-col shadow-sm hover:shadow-md transition-shadow duration-200"
+      className="bg-white rounded-md border border-gray-200 overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-200"
       style={{ borderLeft: "4px solid #dc2626" }}
     >
       <div className="p-5 flex flex-col gap-4 flex-1">
@@ -60,12 +68,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-gray-300 text-sm select-none" aria-hidden>†</span>
-            
-              href={bill.legislation_url ?? "#"}
-              target="_blank"
-              rel="noreferrer"
-              className="font-mono text-sm font-bold text-gray-600 hover:text-red-600 transition-colors"
-            >
+            <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold text-gray-600 hover:text-red-600 transition-colors">
               {bill.bill_type.toUpperCase()} {bill.number}
             </a>
           </div>
@@ -83,12 +86,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
 
         <div className="flex items-center gap-2 flex-wrap">
           <PartyBadge party={bill.sponsor_party} />
-          <a
-            href={bill.sponsor_bioguide_id ? `/rep/${bill.sponsor_bioguide_id}` : "#"}
-            className="text-sm text-gray-800 font-medium hover:text-red-600 hover:underline transition-colors"
-          >
-            {sponsorName}
-          </a>
+          <SponsorLink bill={bill} name={sponsorName} />
           {bill.sponsor_state && (
             <span className="text-sm text-gray-400">
               {bill.sponsor_state}{district}
