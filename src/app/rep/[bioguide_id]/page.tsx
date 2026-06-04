@@ -20,7 +20,7 @@ const PARTY_LABELS: Record<string, string> = {
 };
 
 const PARTY_COLORS: Record<string, string> = {
-  R: "text-red-700 bg-[#F4F4F2] border-red-200",
+  R: "text-red-700 bg-[#F9F3EE] border-red-200",
   D: "text-blue-700 bg-blue-50 border-blue-200",
   I: "text-gray-600 bg-gray-100 border-gray-300",
 };
@@ -107,7 +107,7 @@ export default async function RepPage({ params }: Props) {
               </div>
             </div>
           </div>
-          <div className="mt-8 p-4 bg-[#F4F4F2] border border-[#E0E0DC] rounded-md">
+          <div className="mt-8 p-4 bg-[#F9F3EE] border border-[#DDC9B4] rounded-md">
             <p className="text-sm font-bold text-red-700">100% abandonment rate</p>
             <p className="text-sm text-red-600 mt-0.5">Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
           </div>
