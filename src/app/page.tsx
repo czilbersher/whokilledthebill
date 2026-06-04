@@ -18,7 +18,7 @@ export default async function HomePage() {
       .select("*")
       .eq("is_abandoned", true)
       .order("latest_action_date", { ascending: true })
-      .limit(2000),
+    .range(0, 9999)
     supabase.from("bills").select("*", { count: "exact", head: true }),
     supabase.from("bills").select("*", { count: "exact", head: true }).eq("is_abandoned", true),
     supabase
