@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import Hero from "@/app/components/Hero";
 import BillGrid from "@/app/components/BillGrid";
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 export default async function HomePage() {
   const supabase = createServerSupabaseClient();
