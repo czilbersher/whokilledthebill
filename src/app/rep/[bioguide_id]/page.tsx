@@ -68,7 +68,7 @@ export default async function RepPage({ params }: Props) {
           <Link href="/" className="text-sm text-red-600 hover:text-red-800 font-medium">
             ← Back to all bills
           </Link>
-          
+    <a    
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${sponsorName} introduced ${bills.length} bills in the 119th Congress. Every single one died in committee. No hearing. No vote. No explanation.`)}&url=${encodeURIComponent(`https://whokilledthebill.com/rep/${bioguide_id}`)}`}
             target="_blank"
             rel="noreferrer"
