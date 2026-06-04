@@ -56,12 +56,10 @@ export default function BillCard({ bill }: { bill: BillRow }) {
     >
       <div className="p-5 flex flex-col gap-4 flex-1">
 
-        {/* ── Top row: bill number + days badge ─────────────────────────── */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-1.5">
-            {/* The one graveyard accent — a small muted dagger */}
             <span className="text-gray-300 text-sm select-none" aria-hidden>†</span>
-            <a
+            
               href={bill.legislation_url ?? "#"}
               target="_blank"
               rel="noreferrer"
@@ -73,25 +71,23 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <DaysBadge date={bill.latest_action_date} />
         </div>
 
-        {/* ── Title ─────────────────────────────────────────────────────── */}
         <h2 className="text-base font-semibold text-gray-900 leading-snug">
           {bill.title.length > 110 ? bill.title.slice(0, 108) + "…" : bill.title}
         </h2>
 
-        {/* ── Cause of death ────────────────────────────────────────────── */}
         <div className="bg-red-50 border border-red-100 rounded px-3 py-2.5">
           <p className="text-sm font-bold text-red-700">{cause.verdict}</p>
           <p className="mt-0.5 text-sm text-red-600 leading-snug">{cause.detail}</p>
         </div>
 
-        {/* ── Sponsor ───────────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 flex-wrap">
           <PartyBadge party={bill.sponsor_party} />
-         href={bill.sponsor_bioguide_id ? `/rep/${bill.sponsor_bioguide_id}` : "#"}
-  className="text-sm text-gray-800 font-medium hover:text-red-600 hover:underline transition-colors"
->
-  {sponsorName}
-</a>
+          <a
+            href={bill.sponsor_bioguide_id ? `/rep/${bill.sponsor_bioguide_id}` : "#"}
+            className="text-sm text-gray-800 font-medium hover:text-red-600 hover:underline transition-colors"
+          >
+            {sponsorName}
+          </a>
           {bill.sponsor_state && (
             <span className="text-sm text-gray-400">
               {bill.sponsor_state}{district}
@@ -99,7 +95,6 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           )}
         </div>
 
-        {/* ── Footer meta ───────────────────────────────────────────────── */}
         <div className="mt-auto pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
           <div className="text-sm text-gray-500">
             Introduced{" "}
