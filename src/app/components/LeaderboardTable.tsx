@@ -15,7 +15,7 @@ type RepStats = {
 };
 
 const PARTY_COLORS: Record<string, string> = {
-  R: "text-red-700 bg-red-50 border-red-200",
+  R: "text-red-700 bg-[#F4F4F2] border-[#E0E0DC]",
   D: "text-blue-700 bg-blue-50 border-blue-200",
   I: "text-gray-600 bg-gray-100 border-gray-300",
 };
