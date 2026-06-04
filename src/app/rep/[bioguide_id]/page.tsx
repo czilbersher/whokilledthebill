@@ -25,11 +25,7 @@ const PARTY_COLORS: Record<string, string> = {
   I: "text-gray-600 bg-gray-100 border-gray-300",
 };
 
-export default async function RepPage({
-  params,
-}: {
-  params: { bioguide_id: string };
-}) {
+export default async function RepPage({ params }: { params: { bioguide_id: string } }) {
   const supabase = createServerSupabaseClient();
 
   const { data: bills } = await supabase
@@ -90,7 +86,6 @@ export default async function RepPage({
                 119th Congress · {rep.origin_chamber === "Senate" ? "Senator" : "Representative"}
               </p>
             </div>
-
             <div className="flex gap-6">
               <div className="text-center">
                 <div className="text-4xl font-bold text-red-600">{bills.length}</div>
@@ -102,53 +97,33 @@ export default async function RepPage({
               </div>
             </div>
           </div>
-
           <div className="mt-8 p-4 bg-red-50 border border-red-100 rounded-md">
-            <p className="text-sm font-bold text-red-700">
-              100% abandonment rate
-            </p>
+            <p className="text-sm font-bold text-red-700">100% abandonment rate</p>
             <p className="text-sm text-red-600 mt-0.5">
-              Every bill this member introduced in the 119th Congress died in committee
-              with no hearing, no vote, and no explanation.
+              Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.
             </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Abandoned Bills ({bills.length})
-          </h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Abandoned Bills ({bills.length})</h2>
           {(bills as BillRow[]).map((bill) => (
-            <div
-              key={bill.id}
-              className="bg-white rounded-md border border-gray-200 p-4 shadow-sm"
-              style={{ borderLeft: "4px solid #dc2626" }}
-            >
+            <div key={bill.id} className="bg-white rounded-md border border-gray-200 p-4 shadow-sm" style={{ borderLeft: "4px solid #dc2626" }}>
               <div className="flex items-start justify-between gap-3 mb-2">
-                
-                  href={bill.legislation_url ?? "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-sm font-bold text-gray-500 hover:text-red-600 transition-colors"
-                >
+                <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold text-gray-500 hover:text-red-600 transition-colors">
                   {bill.bill_type?.toUpperCase()} {bill.number}
                 </a>
                 <span className="text-sm font-bold text-red-600 whitespace-nowrap">
                   {daysSince(bill.latest_action_date).toLocaleString()} days
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-900 leading-snug mb-2">
-                {bill.title}
-              </p>
+              <p className="text-sm font-medium text-gray-900 leading-snug mb-2">{bill.title}</p>
               <div className="flex flex-wrap gap-3 text-xs text-gray-400">
                 <span>Introduced {fmt(bill.introduced_date)}</span>
                 {bill.policy_area && (
-                  <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded">
-                    {bill.policy_area}
-                  </span>
+                  <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded">{bill.policy_area}</span>
                 )}
               </div>
             </div>
@@ -157,9 +132,7 @@ export default async function RepPage({
 
         <div className="space-y-6">
           <div className="bg-white rounded-md border border-gray-200 p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">
-              Bills by Policy Area
-            </h3>
+            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">Bills by Policy Area</h3>
             <div className="space-y-2">
               {topPolicies.map(([area, count]) => (
                 <div key={area} className="flex items-center justify-between gap-2">
@@ -169,19 +142,13 @@ export default async function RepPage({
               ))}
             </div>
           </div>
-
           <div className="bg-white rounded-md border border-gray-200 p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
-              About This Data
-            </h3>
+            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">About This Data</h3>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Data sourced from the official Congress.gov API. A bill is considered
-              abandoned if its only recorded actions are introduction and committee
-              referral, with no subsequent hearing, markup, or floor vote for 180+ days.
+              Data sourced from the official Congress.gov API. A bill is considered abandoned if its only recorded actions are introduction and committee referral, with no subsequent hearing, markup, or floor vote for 180+ days.
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );
