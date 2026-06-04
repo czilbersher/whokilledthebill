@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Nav from "@/app/components/Nav";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -24,7 +25,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistMono.variable} h-full`}>
-      <body className="min-h-full bg-[#f8f8f6] antialiased">{children}</body>
+      <body className="min-h-full bg-[#f8f8f6] antialiased">
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }
