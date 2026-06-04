@@ -1,5 +1,6 @@
 "use client";
 
+
 import { getCauseOfDeath } from "@/lib/causeOfDeath";
 import type { BillRow } from "@/types/db";
 
