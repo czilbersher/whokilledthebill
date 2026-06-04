@@ -18,7 +18,7 @@ function fmt(dateStr: string | null) {
 }
 
 const PARTY_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  R: { bg: "bg-[#F4F4F2]",  text: "text-red-700",  border: "border-red-200",  label: "Republican"  },
+  R: { bg: "bg-[#F9F3EE]",  text: "text-red-700",  border: "border-red-200",  label: "Republican"  },
   D: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", label: "Democrat"     },
   I: { bg: "bg-gray-100",text: "text-gray-600", border: "border-gray-300", label: "Independent"  },
 };
@@ -37,7 +37,7 @@ function DaysBadge({ date }: { date: string | null }) {
   const days = daysSince(date);
   if (days === null) return null;
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#F4F4F2] border border-red-200 text-red-700 text-sm font-bold whitespace-nowrap">
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#F9F3EE] border border-red-200 text-red-700 text-sm font-bold whitespace-nowrap">
       {days.toLocaleString()} days
     </span>
   );
@@ -90,7 +90,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
         <h2 className="text-base font-semibold text-gray-900 leading-snug">
           {bill.title.length > 110 ? bill.title.slice(0, 108) + "…" : bill.title}
         </h2>
-        <div className="bg-[#F4F4F2] border border-red-100 rounded px-3 py-2.5">
+        <div className="bg-[#F9F3EE] border border-red-100 rounded px-3 py-2.5">
           <p className="text-sm font-bold text-red-700">{cause.verdict}</p>
           <p className="mt-0.5 text-sm text-red-600 leading-snug">{cause.detail}</p>
         </div>
