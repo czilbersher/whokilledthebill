@@ -99,11 +99,25 @@ export default function BillCard({ bill }: { bill: BillRow }) {
             Introduced{" "}
             <span className="font-medium text-gray-700">{fmt(bill.introduced_date)}</span>
           </div>
-          {bill.policy_area && (
-            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-medium">
-              {bill.policy_area}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {bill.policy_area && (
+              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-medium">
+                {bill.policy_area}
+              </span>
+            )}
+            
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`"${bill.title.slice(0, 80)}${bill.title.length > 80 ? "…" : ""}" — introduced ${fmt(bill.introduced_date)}, abandoned for ${daysSince(bill.latest_action_date) ?? 0} days. No hearing. No vote.`)}&url=${encodeURIComponent(bill.legislation_url ?? "https://whokilledthebill.com")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-black transition-colors"
+              title="Share on X"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              Share
+            </a>
+          </div>
         </div>
 
       </div>
