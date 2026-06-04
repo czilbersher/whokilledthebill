@@ -87,7 +87,11 @@ export default function BillCard({ bill }: { bill: BillRow }) {
         {/* ── Sponsor ───────────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 flex-wrap">
           <PartyBadge party={bill.sponsor_party} />
-          <span className="text-sm text-gray-800 font-medium">{sponsorName}</span>
+         href={bill.sponsor_bioguide_id ? `/rep/${bill.sponsor_bioguide_id}` : "#"}
+  className="text-sm text-gray-800 font-medium hover:text-red-600 hover:underline transition-colors"
+>
+  {sponsorName}
+</a>
           {bill.sponsor_state && (
             <span className="text-sm text-gray-400">
               {bill.sponsor_state}{district}
