@@ -61,11 +61,9 @@ export default function BillGrid({ bills, policyAreas }: Props) {
 
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
-      {/* Filter bar */}
-      <div className="sticky top-0 z-20" style={{ background: "#161b22", borderBottom: "1px solid #30363d" }}>
+      <div className="sticky top-14 z-20" style={{ background: "#161b22", borderBottom: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap gap-3 items-center">
-            {/* Search */}
             <div className="relative flex-1 min-w-52">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{ color: "#8b9198" }}>⌕</span>
               <input
@@ -77,38 +75,32 @@ export default function BillGrid({ bills, policyAreas }: Props) {
                 style={{ background: "#0d1117", border: "1px solid #30363d", color: "#e6edf3" }}
               />
             </div>
-            {/* Chamber */}
             <select value={chamber} onChange={e => { setChamber(e.target.value); reset(); }} className={selectClass} style={selectStyle}>
               <option value="all">All chambers</option>
               <option value="House">House</option>
               <option value="Senate">Senate</option>
             </select>
-            {/* Party */}
             <select value={party} onChange={e => { setParty(e.target.value); reset(); }} className={selectClass} style={selectStyle}>
               <option value="all">All parties</option>
               <option value="R">Republican</option>
               <option value="D">Democrat</option>
               <option value="I">Independent</option>
             </select>
-            {/* Duration */}
             <select value={String(minDays)} onChange={e => { setMinDays(Number(e.target.value)); reset(); }} className={selectClass} style={selectStyle}>
               <option value="0">Any duration</option>
               <option value="365">Abandoned 1+ year</option>
               <option value="730">Abandoned 2+ years</option>
             </select>
-            {/* Policy area */}
             <select value={policy} onChange={e => { setPolicy(e.target.value); reset(); }} className={`${selectClass} max-w-[180px]`} style={selectStyle}>
               <option value="all">All policy areas</option>
               {policyAreas.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
-            {/* Sort */}
             <select value={sortKey} onChange={e => { setSortKey(e.target.value as SortKey); reset(); }} className={selectClass} style={selectStyle}>
               <option value="days">Most abandoned first</option>
               <option value="introduced">Earliest introduced</option>
               <option value="sponsor">By sponsor name</option>
             </select>
           </div>
-          {/* Result count */}
           <div className="mt-2 text-sm" style={{ color: "#8b9198" }}>
             Showing <span className="font-semibold" style={{ color: "#e6edf3" }}>{filtered.length.toLocaleString()}</span>
             {" of "}
@@ -118,7 +110,6 @@ export default function BillGrid({ bills, policyAreas }: Props) {
         </div>
       </div>
 
-      {/* Card grid */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {pageRows.length === 0 ? (
           <div className="text-center py-24">
@@ -131,7 +122,6 @@ export default function BillGrid({ bills, policyAreas }: Props) {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-center gap-3">
             <button

@@ -17,7 +17,7 @@ export default function Nav() {
               <rect x="3" y="18.5" width="18" height="1.5" fill="#e6edf3"/>
             </svg>
             <span className="font-mono text-sm font-bold tracking-tight" style={{ color: "#e6edf3" }}>
-              Who Killed the Bill?
+              Who Killed the <span style={{ color: "#dc2626" }}>Bill?</span>
             </span>
           </Link>
           <nav className="flex items-center gap-6">

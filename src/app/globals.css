@@ -19,12 +19,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* All text defaults to minimum 14px */
 p, li, td, th, label, input, select, button {
   font-size: max(14px, 0.875rem);
 }
 
-::-webkit-scrollbar               { width: 6px; }
-::-webkit-scrollbar-track         { background: #161b22; }
-::-webkit-scrollbar-thumb         { background: #30363d; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover   { background: #8b9198; }
+::-webkit-scrollbar        { width: 6px; }
+::-webkit-scrollbar-track  { background: #161b22; }
+::-webkit-scrollbar-thumb  { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8b9198; }

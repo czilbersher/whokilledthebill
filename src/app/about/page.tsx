@@ -12,7 +12,7 @@ export default function AboutPage() {
       >
         About This Site
       </h1>
-      <div className="prose max-w-none">
+      <div className="max-w-none">
         <p
           className="text-lg leading-relaxed mb-6"
           style={{ color: "#c9d1d9" }}
@@ -68,7 +68,7 @@ export default function AboutPage() {
         </p>
         <p className="text-base mb-10">
           
-            <a href="mailto:press@whokilledthebill.com"
+            href="mailto:press@whokilledthebill.com"
             style={{ color: "#dc2626" }}
           >
             press@whokilledthebill.com
@@ -89,7 +89,7 @@ export default function AboutPage() {
           markup, or floor vote for 180 or more days. For full methodology
           details, see the{" "}
           
-            <a href="/methodology"
+            href="/methodology"
             style={{ color: "#dc2626" }}
           >
             Methodology page

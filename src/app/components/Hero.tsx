@@ -6,7 +6,6 @@ interface HeroProps {
 export default function Hero({ totalBills, abandonedBills }: HeroProps) {
   return (
     <header>
-      {/* Crime tape */}
       <div
         className="w-full py-1.5 text-center text-xs font-black tracking-widest"
         style={{ background: "#f5c518", color: "#000" }}
@@ -14,11 +13,9 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
         ⚠ CRIME SCENE — U.S. CONGRESS — 119TH SESSION — DO NOT IGNORE ⚠
       </div>
 
-      {/* Masthead */}
       <div style={{ background: "#0d1117", borderBottom: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-          {/* Flag + congress identifier */}
           <div className="flex items-center gap-2 mb-5">
             <svg width="28" height="20" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
               <rect width="28" height="20" fill="#B22234"/>
@@ -35,7 +32,6 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             </span>
           </div>
 
-          {/* Headline */}
           <h1
             className="font-black tracking-tight mb-3"
             style={{ fontSize: "clamp(36px, 6vw, 64px)", color: "#fff", lineHeight: 1.05 }}
@@ -43,19 +39,16 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             Who Killed the <span style={{ color: "#dc2626" }}>Bill?</span>
           </h1>
 
-          {/* Subtitle */}
           <p className="text-base mb-2 max-w-2xl leading-relaxed" style={{ color: "#8b9198" }}>
             Your elected officials introduced {totalBills.toLocaleString()} pieces of legislation.
             Every single one was buried in committee — referred, forgotten, and never heard from again.
             No vote was held. No hearing was scheduled. No explanation was given.
           </p>
 
-          {/* Not a bug line */}
           <p className="text-base font-semibold mb-8" style={{ color: "#f5c518" }}>
             ⚠ No, this isn&#39;t a bug. That&#39;s the point.
           </p>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mb-8 max-w-2xl">
             <div
               className="rounded-lg p-4"
@@ -101,7 +94,6 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             </div>
           </div>
 
-          {/* Editorial context */}
           <p className="text-sm max-w-2xl leading-relaxed" style={{ color: "#8b9198" }}>
             These are the promises made to voters and the committees where they went to die.
             Search by sponsor, party, policy area, or how long the bill has been ignored.

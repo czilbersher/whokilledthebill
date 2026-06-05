@@ -92,7 +92,6 @@ export default function BillCard({ bill }: { bill: BillRow }) {
       style={{ background: "#161b22", border: "1px solid #30363d", borderLeft: "3px solid #dc2626" }}
     >
       <div className="p-5 flex flex-col gap-4 flex-1">
-        {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
             <span className="sr-only">Bill</span>
@@ -109,12 +108,10 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <DaysBadge date={bill.latest_action_date} />
         </div>
 
-        {/* Title */}
         <h2 className="text-base font-semibold leading-snug" style={{ color: "#e6edf3" }}>
           {bill.title.length > 110 ? bill.title.slice(0, 108) + "…" : bill.title}
         </h2>
 
-        {/* Cause of death */}
         <div
           className="rounded px-3 py-2.5"
           style={{ background: "#0d1117", border: "1px solid #30363d" }}
@@ -123,7 +120,6 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <p className="mt-0.5 text-sm leading-snug" style={{ color: "#8b9198" }}>{cause.detail}</p>
         </div>
 
-        {/* Sponsor + state */}
         <div className="flex items-center gap-2 flex-wrap">
           <PartyBadge party={bill.sponsor_party} />
           <SponsorLink bill={bill} name={sponsorName} />
@@ -134,7 +130,6 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           )}
         </div>
 
-        {/* Footer */}
         <div
           className="mt-auto pt-3 flex flex-wrap items-center justify-between gap-2"
           style={{ borderTop: "1px solid #30363d" }}
