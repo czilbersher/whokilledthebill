@@ -4,102 +4,111 @@ interface HeroProps {
 }
 
 export default function Hero({ totalBills, abandonedBills }: HeroProps) {
-  const pct = totalBills > 0 ? Math.round((abandonedBills / totalBills) * 100) : 0;
-
   return (
     <header>
-      {/* Red cap — the one graveyard accent */}
-      <div className="h-1 w-full bg-red-600" />
+      {/* Crime tape */}
+      <div
+        className="w-full py-1.5 text-center text-xs font-black tracking-widest"
+        style={{ background: "#f5c518", color: "#000" }}
+      >
+        ⚠ CRIME SCENE — U.S. CONGRESS — 119TH SESSION — DO NOT IGNORE ⚠
+      </div>
 
       {/* Masthead */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex flex-wrap items-baseline justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900">
-              Who Killed the Bill?
-            </h1>
-            <p className="mt-1.5 text-base text-gray-500 max-w-xl leading-relaxed">
-              U.S. federal legislation introduced by elected officials —
-              then abandoned in committee without a vote or a hearing.
-            </p>
-          </div>
-          <div className="text-xs text-gray-400 text-right leading-relaxed">
-            119th Congress<br />
-            Data: Congress.gov
-          </div>
-        </div>
-      </div>
+      <div style={{ background: "#0d1117", borderBottom: "1px solid #30363d" }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-      {/* Hero stat block */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center">
+          {/* Flag + congress identifier */}
+          <div className="flex items-center gap-2 mb-5">
+            <svg width="28" height="20" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="20" fill="#B22234"/>
+              <rect y="2.85" width="28" height="2.86" fill="#fff"/>
+              <rect y="8.57" width="28" height="2.86" fill="#fff"/>
+              <rect y="14.28" width="28" height="2.86" fill="#fff"/>
+              <rect width="12" height="10" fill="#3C3B6E"/>
+            </svg>
+            <span
+              className="text-xs tracking-widest uppercase"
+              style={{ color: "#8b9198" }}
+            >
+              119th United States Congress · Official Legislative Record · Data: Congress.gov
+            </span>
+          </div>
 
-            {/* The number */}
-            <div className="md:col-span-2">
+          {/* Headline */}
+          <h1
+            className="font-black tracking-tight mb-3"
+            style={{ fontSize: "clamp(36px, 6vw, 64px)", color: "#fff", lineHeight: 1.05 }}
+          >
+            Who Killed the <span style={{ color: "#dc2626" }}>Bill?</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-base mb-2 max-w-2xl leading-relaxed" style={{ color: "#8b9198" }}>
+            Your elected officials introduced {totalBills.toLocaleString()} pieces of legislation.
+            Every single one was buried in committee — referred, forgotten, and never heard from again.
+            No vote was held. No hearing was scheduled. No explanation was given.
+          </p>
+
+          {/* Not a bug line */}
+          <p className="text-base font-semibold mb-8" style={{ color: "#f5c518" }}>
+            ⚠ No, this isn&#39;t a bug. That&#39;s the point.
+          </p>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 mb-8 max-w-2xl">
+            <div
+              className="rounded-lg p-4"
+              style={{ background: "#161b22", border: "1px solid #30363d" }}
+            >
               <div
-                className="font-black text-gray-900 leading-none"
-                style={{ fontSize: "clamp(72px, 10vw, 128px)" }}
+                className="font-black mb-1"
+                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1 }}
               >
-                {abandonedBills.toLocaleString()}
+                {totalBills.toLocaleString()}
               </div>
-              <p className="mt-2 text-lg font-semibold text-gray-700">
-                bills died in committee
-              </p>
-              <p className="mt-1 text-base text-red-600 font-medium">
-                {pct}% of all 119th Congress legislation
-              </p>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Bills introduced
+              </div>
             </div>
-
-            {/* Editorial context */}
-            <div className="md:col-span-3 border-l-0 md:border-l md:border-gray-200 md:pl-12">
-              <p className="text-lg text-gray-800 leading-relaxed">
-                Every bill on this page was introduced by an elected member of Congress,
-                referred to committee — and then quietly forgotten. No vote was held.
-                No hearing was scheduled. No explanation was given.
-              </p>
-              <p className="mt-4 text-base text-gray-500 leading-relaxed">
-                These are the promises made to voters and the committees where they went to die.
-                Search by sponsor, party, policy area, or how long the bill has been ignored.
-              </p>
-<p className="mt-4 text-base text-red-600 font-semibold leading-relaxed">No, this isn't a bug. That&#39;s the point.</p>              
+            <div
+              className="rounded-lg p-4"
+              style={{ background: "#161b22", border: "1px solid #30363d" }}
+            >
+              <div
+                className="font-black mb-1"
+                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}
+              >
+                0
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Received a hearing
+              </div>
             </div>
-
+            <div
+              className="rounded-lg p-4"
+              style={{ background: "#161b22", border: "1px solid #30363d" }}
+            >
+              <div
+                className="font-black mb-1"
+                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}
+              >
+                518
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Days, longest cold case
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Stat strip */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-3 divide-x divide-gray-200">
-            <StatCell value={totalBills.toLocaleString()} label="Bills introduced" />
-            <StatCell value="0" label="Received a hearing" red />
-            <StatCell value={`${pct}%`} label="Abandonment rate" red />
-          </div>
+          {/* Editorial context */}
+          <p className="text-sm max-w-2xl leading-relaxed" style={{ color: "#8b9198" }}>
+            These are the promises made to voters and the committees where they went to die.
+            Search by sponsor, party, policy area, or how long the bill has been ignored.
+          </p>
+
         </div>
       </div>
     </header>
-  );
-}
-
-function StatCell({
-  value,
-  label,
-  red,
-}: {
-  value: string;
-  label: string;
-  red?: boolean;
-}) {
-  return (
-    <div className="py-5 px-4 sm:px-6 text-center">
-      <div className={`text-2xl sm:text-3xl font-black ${red ? "text-red-600" : "text-gray-900"}`}>
-        {value}
-      </div>
-      <div className="mt-1 text-xs sm:text-sm text-gray-500 font-medium uppercase tracking-wide">
-        {label}
-      </div>
-    </div>
   );
 }
