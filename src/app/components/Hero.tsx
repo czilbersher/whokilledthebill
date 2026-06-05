@@ -73,7 +73,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 divide-x divide-gray-200">
             <StatCell value={totalBills.toLocaleString()} label="Bills introduced" />
-            <StatCell value={abandonedBills.toLocaleString()} label="Died in committee" red />
+            <StatCell value="0" label="Received a hearing" red />
             <StatCell value={`${pct}%`} label="Abandonment rate" red />
           </div>
         </div>
