@@ -44,10 +44,10 @@ export default function AboutPage() {
         </p>
         <p className="text-base text-gray-600 mb-10">
           
-            href="mailto:czilbersher@gmail.com"
+            href="mailto:press@whokilledthebill.com"
             className="text-red-600 hover:underline"
           >
-            czilbersher@gmail.com
+            press@whokilledthebill.com
           </a>
         </p>
         <h2 className="text-xl font-bold text-gray-900 mt-10 mb-4">
