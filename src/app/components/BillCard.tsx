@@ -67,7 +67,7 @@ function ShareButton({ bill }: { bill: BillRow }) {
   const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
   return (
     
-      href={tweet}
+      <a href={tweet}
       target="_blank"
       rel="noreferrer"
       className="inline-flex items-center gap-1 text-xs transition-colors px-3 py-1 rounded"
