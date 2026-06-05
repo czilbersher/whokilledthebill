@@ -17,20 +17,20 @@ interface Props {
 }
 
 export default function BillGrid({ bills, policyAreas }: Props) {
-  const [chamber, setChamber] = useState("all");
-  const [party,   setParty]   = useState("all");
-  const [policy,  setPolicy]  = useState("all");
-  const [minDays, setMinDays] = useState(0);
-  const [search,  setSearch]  = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("days");
-  const [page,    setPage]    = useState(1);
+  const [chamber,  setChamber]  = useState("all");
+  const [party,    setParty]    = useState("all");
+  const [policy,   setPolicy]   = useState("all");
+  const [minDays,  setMinDays]  = useState(0);
+  const [search,   setSearch]   = useState("");
+  const [sortKey,  setSortKey]  = useState<SortKey>("days");
+  const [page,     setPage]     = useState(1);
   const PER_PAGE = 48;
 
   const filtered = useMemo(() => {
     let rows = bills;
     if (chamber !== "all") rows = rows.filter(b => b.origin_chamber === chamber);
-    if (party   !== "all") rows = rows.filter(b => b.sponsor_party  === party);
-    if (policy  !== "all") rows = rows.filter(b => b.policy_area    === policy);
+    if (party   !== "all") rows = rows.filter(b => b.sponsor_party   === party);
+    if (policy  !== "all") rows = rows.filter(b => b.policy_area     === policy);
     if (minDays  > 0)      rows = rows.filter(b => daysSince(b.latest_action_date) >= minDays);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -56,108 +56,74 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   const pageRows   = sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const reset      = () => setPage(1);
 
+  const selectClass = "px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-red-500";
+  const selectStyle = { background: "#161b22", border: "1px solid #30363d", color: "#e6edf3" };
+
   return (
-    <div className="bg-[#f8f8f6] min-h-screen">
-
-      {/* ── Filter bar ─────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen" style={{ background: "#0d1117" }}>
+      {/* Filter bar */}
+      <div className="sticky top-0 z-20" style={{ background: "#161b22", borderBottom: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-
           <div className="flex flex-wrap gap-3 items-center">
             {/* Search */}
             <div className="relative flex-1 min-w-52">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base pointer-events-none">
-                ⌕
-              </span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{ color: "#8b9198" }}>⌕</span>
               <input
                 type="search"
                 placeholder="Search bills, sponsors, keywords…"
                 value={search}
                 onChange={e => { setSearch(e.target.value); reset(); }}
-                className="w-full pl-8 pr-3 py-2 bg-gray-50 border border-gray-300 rounded
-                           text-sm text-gray-900 placeholder-gray-400
-                           focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full pl-8 pr-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                style={{ background: "#0d1117", border: "1px solid #30363d", color: "#e6edf3" }}
               />
             </div>
-
             {/* Chamber */}
-            <select
-              value={chamber}
-              onChange={e => { setChamber(e.target.value); reset(); }}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm text-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+            <select value={chamber} onChange={e => { setChamber(e.target.value); reset(); }} className={selectClass} style={selectStyle}>
               <option value="all">All chambers</option>
               <option value="House">House</option>
               <option value="Senate">Senate</option>
             </select>
-
             {/* Party */}
-            <select
-              value={party}
-              onChange={e => { setParty(e.target.value); reset(); }}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm text-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+            <select value={party} onChange={e => { setParty(e.target.value); reset(); }} className={selectClass} style={selectStyle}>
               <option value="all">All parties</option>
               <option value="R">Republican</option>
               <option value="D">Democrat</option>
               <option value="I">Independent</option>
             </select>
-
-            {/* Abandoned for */}
-            <select
-              value={String(minDays)}
-              onChange={e => { setMinDays(Number(e.target.value)); reset(); }}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm text-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+            {/* Duration */}
+            <select value={String(minDays)} onChange={e => { setMinDays(Number(e.target.value)); reset(); }} className={selectClass} style={selectStyle}>
               <option value="0">Any duration</option>
               <option value="365">Abandoned 1+ year</option>
               <option value="730">Abandoned 2+ years</option>
             </select>
-
             {/* Policy area */}
-            <select
-              value={policy}
-              onChange={e => { setPolicy(e.target.value); reset(); }}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm text-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-red-500 max-w-[180px]"
-            >
+            <select value={policy} onChange={e => { setPolicy(e.target.value); reset(); }} className={`${selectClass} max-w-[180px]`} style={selectStyle}>
               <option value="all">All policy areas</option>
               {policyAreas.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
-
             {/* Sort */}
-            <select
-              value={sortKey}
-              onChange={e => { setSortKey(e.target.value as SortKey); reset(); }}
-              className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm text-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
+            <select value={sortKey} onChange={e => { setSortKey(e.target.value as SortKey); reset(); }} className={selectClass} style={selectStyle}>
               <option value="days">Most abandoned first</option>
               <option value="introduced">Earliest introduced</option>
               <option value="sponsor">By sponsor name</option>
             </select>
           </div>
-
           {/* Result count */}
-          <div className="mt-2 text-sm text-gray-500">
-            Showing{" "}
-            <span className="font-semibold text-gray-800">{filtered.length.toLocaleString()}</span>
-            {" "}of{" "}
-            <span className="font-semibold text-gray-800">{bills.length.toLocaleString()}</span>
+          <div className="mt-2 text-sm" style={{ color: "#8b9198" }}>
+            Showing <span className="font-semibold" style={{ color: "#e6edf3" }}>{filtered.length.toLocaleString()}</span>
+            {" of "}
+            <span className="font-semibold" style={{ color: "#e6edf3" }}>{bills.length.toLocaleString()}</span>
             {" "}abandoned bills
           </div>
         </div>
       </div>
 
-      {/* ── Card grid ──────────────────────────────────────────────────── */}
+      {/* Card grid */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {pageRows.length === 0 ? (
-          <div className="text-center py-24 text-gray-400">
-            <p className="text-lg font-medium">No bills match the current filters.</p>
-            <p className="mt-1 text-sm">Try adjusting your search or filters.</p>
+          <div className="text-center py-24">
+            <p className="text-lg font-medium" style={{ color: "#8b9198" }}>No bills match the current filters.</p>
+            <p className="text-sm mt-1" style={{ color: "#8b9198" }}>Try adjusting your search or filters.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -165,27 +131,25 @@ export default function BillGrid({ bills, policyAreas }: Props) {
           </div>
         )}
 
-        {/* ── Pagination ───────────────────────────────────────────────── */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-center gap-3">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 rounded border border-gray-300 text-sm font-medium
-                         text-gray-700 bg-white hover:bg-gray-50
-                         disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              style={{ background: "#161b22", border: "1px solid #30363d", color: "#e6edf3" }}
             >
               ← Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm" style={{ color: "#8b9198" }}>
               Page {page} of {totalPages} &nbsp;·&nbsp; {sorted.length.toLocaleString()} results
             </span>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 rounded border border-gray-300 text-sm font-medium
-                         text-gray-700 bg-white hover:bg-gray-50
-                         disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              style={{ background: "#161b22", border: "1px solid #30363d", color: "#e6edf3" }}
             >
               Next →
             </button>
