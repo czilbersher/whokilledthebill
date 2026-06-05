@@ -67,7 +67,7 @@ export default function AboutPage() {
           Curtis Zilbersher
         </p>
         <p className="text-base mb-10">
-          
+ <a         
             href="mailto:press@whokilledthebill.com"
             style={{ color: "#dc2626" }}
           >
@@ -89,7 +89,7 @@ export default function AboutPage() {
           markup, or floor vote for 180 or more days. For full methodology
           details, see the{" "}
           
-            href="/methodology"
+           <a href="/methodology"
             style={{ color: "#dc2626" }}
           >
             Methodology page
