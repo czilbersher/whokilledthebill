@@ -17,7 +17,7 @@ export default function Nav() {
               <rect x="3" y="18.5" width="18" height="1.5" fill="#e6edf3"/>
             </svg>
             <span className="font-mono text-sm font-bold tracking-tight" style={{ color: "#e6edf3" }}>
-              Who Killed the <span style={{ color: "#dc2626" }}>Bill?</span>
+              Who Killed the Bill?
             </span>
           </Link>
           <nav className="flex items-center gap-6">
@@ -27,4 +27,15 @@ export default function Nav() {
             <Link href="/faq" className="text-sm transition-colors" style={{ color: "#8b9198" }}>
               FAQ
             </Link>
-            <Link href="/methodology" className="text-sm transition-colors" style={{
+            <Link href="/methodology" className="text-sm transition-colors" style={{ color: "#8b9198" }}>
+              Methodology
+            </Link>
+            <Link href="/about" className="text-sm transition-colors" style={{ color: "#8b9198" }}>
+              About
+            </Link>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}
