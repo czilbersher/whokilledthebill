@@ -30,6 +30,9 @@ export default function Nav() {
             <Link href="/methodology" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Methodology
             </Link>
+            <Link href="/about" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+  About
+</Link>
           </nav>
         </div>
       </div>
