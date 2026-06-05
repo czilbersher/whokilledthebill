@@ -33,27 +33,27 @@ export default async function HomePage() {
   ].sort();
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
+    <div className="min-h-screen" style={{ background: "#0d1117" }}>
       <Hero
         totalBills={totalCount ?? 0}
         abandonedBills={abandonedCount ?? 0}
       />
       <BillGrid bills={bills ?? []} policyAreas={policyAreas} />
-      <footer className="border-t border-gray-200 bg-white">
+      <footer style={{ background: "#161b22", borderTop: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-wrap gap-6 justify-between items-start">
             <div>
-              <p className="font-mono text-xs text-gray-400 tracking-widest uppercase mb-1">
+              <p className="font-mono text-xs tracking-widest uppercase mb-1" style={{ color: "#8b9198" }}
                 Who Killed the Bill?
               </p>
-              <p className="text-xs text-gray-500 max-w-sm">
+              <p className="text-xs max-w-sm" style={{ color: "#8b9198" }}
                 A public-interest project. Data sourced from the official Congress.gov API
                 (Library of Congress). A bill is considered abandoned if its only recorded
                 actions are introduction and committee referral, with no subsequent hearing,
                 markup, or floor vote for 180+ days.
               </p>
             </div>
-            <div className="font-mono text-[10px] text-gray-400 text-right">
+            <div className="font-mono text-[10px] text-right" style={{ color: "#8b9198" }}
               <p>119th Congress</p>
               <p>Jan 3, 2025 – present</p>
               <p className="mt-1">Data: Congress.gov</p>
