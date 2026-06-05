@@ -96,7 +96,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <div className="flex flex-col gap-1">
             <span className="sr-only">Bill</span>
             
-              href={bill.legislation_url ?? "#"}
+              <a href={bill.legislation_url ?? "#"}
               target="_blank"
               rel="noreferrer"
               className="font-mono text-sm font-bold hover:underline transition-colors"
