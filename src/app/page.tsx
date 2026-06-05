@@ -57,6 +57,7 @@ export default async function HomePage() {
               <p>119th Congress</p>
               <p>Jan 3, 2025 – present</p>
               <p className="mt-1">Data: Congress.gov</p>
+              <p className="mt-1">Last updated: June 5, 2026</p>
             </div>
           </div>
         </div>
