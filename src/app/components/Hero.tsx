@@ -98,6 +98,9 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             These are the promises made to voters and the committees where they went to die.
             Search by sponsor, party, policy area, or how long the bill has been ignored.
           </p>
+          <ZipLookup />
+          <p className="hidden">
+          </p>
 
         </div>
       </div>
