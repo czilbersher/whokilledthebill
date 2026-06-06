@@ -305,10 +305,10 @@ export default async function BillPage({
           </div>
         </div>
 
-      {bill.legislation_url && (
+    {bill.legislation_url && (
           <div style={{ marginBottom: "2rem" }}>
-            
-            <a href={bill.legislation_url}
+            <Link
+              href={bill.legislation_url}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -319,7 +319,7 @@ export default async function BillPage({
               className="hover:underline"
             >
               View official record on Congress.gov
-            </a>
+            </Link>
           </div>
         )}
 
