@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -11,7 +11,7 @@ export async function generateMetadata({
   const [billType, ...rest] = slug.split("-");
   const number = rest.join("-");
 
-  const supabase = createClient();
+  const supabase = createServerSupabaseClient();
   const { data: bills } = await supabase
     .from("bills")
     .select("*")
@@ -44,7 +44,7 @@ export default async function BillPage({
   const [billType, ...rest] = slug.split("-");
   const number = rest.join("-");
 
-  const supabase = createClient();
+  const supabase = createServerSupabaseClient();
   const { data: bills } = await supabase
     .from("bills")
     .select("*")
