@@ -19,7 +19,7 @@ export async function generateMetadata({
     .eq("number", number)
     .limit(1);
 
-  const bill = bills?.[0];
+  const bill = bills?.[0] as any;
   if (!bill) return { title: "Bill Not Found | Who Killed the Bill?" };
 
   return {
