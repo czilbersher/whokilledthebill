@@ -318,7 +318,7 @@ export default async function BillPage({
               }}
               className="hover:underline"
             >
-              View official record on Congress.gov →
+              View official record on Congress.gov &gt;
             </a>
           </div>
         )}
