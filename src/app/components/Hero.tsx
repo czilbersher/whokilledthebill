@@ -1,3 +1,6 @@
+"use client";
+
+import ZipLookup from "@/app/components/ZipLookup";
 interface HeroProps {
   totalBills: number;
   abandonedBills: number;
