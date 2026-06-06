@@ -40,7 +40,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
         b.title.toLowerCase().includes(q) ||
         (b.sponsor_name  ?? "").toLowerCase().includes(q) ||
         (b.policy_area   ?? "").toLowerCase().includes(q) ||
-        b.number.includes(q)||
+        b.number.includes(q)
  
       );
     }
