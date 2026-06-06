@@ -25,6 +25,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   const [sortKey,  setSortKey]  = useState<SortKey>("days");
   const [page,     setPage]     = useState(1);
   const PER_PAGE = 48;
+  const stateParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("state") : null;
 
   const filtered = useMemo(() => {
     let rows = bills;
@@ -62,6 +63,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
 
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
+      {stateParam && <div style={{ borderLeft: "3px solid #dc2626", background: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "10px 16px", margin: "1rem", fontSize: "14px", color: "#111", lineHeight: 1.6 }}><span style={{ fontWeight: 700, color: "#dc2626" }}>Showing abandoned bills from {stateParam} representatives.</span> Your elected officials introduced these bills — and let every one die. No hearing. No vote. No explanation.</div>}
       <div className="sticky top-14 z-20" style={{ background: "#161b22", borderBottom: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap gap-3 items-center">
