@@ -39,7 +39,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             Who Killed the <span style={{ color: "#dc2626" }}>Bill?</span>
           </h1>
 
-          <p className="text-lg mb-2 max-w-2xl leading-relaxed" style={{ color: "#c9d1d9" }}>
+          <p className="text-xl mb-2 max-w-2xl" style={{ color: "#c9d1d9" }}>
             Your elected officials introduced {totalBills.toLocaleString()} pieces of legislation.
             Every single one was buried in committee — referred, forgotten, and never heard from again.
             No vote was held. No hearing was scheduled. No explanation was given.
