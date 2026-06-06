@@ -345,7 +345,7 @@ export default async function BillPage({
               fontWeight: 600,
               textDecoration: "none",
             }}
-          >
+          <a>
             Share on X
           </a>
           <Link
