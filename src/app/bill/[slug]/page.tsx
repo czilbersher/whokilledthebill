@@ -52,7 +52,7 @@ export default async function BillPage({
     .eq("number", number)
     .limit(1);
 
-  const bill = bills?.[0];
+  const bill = bills?.[0] as any;
   if (!bill) notFound();
 
   const days = daysSince(bill.introduced_date);
