@@ -16,7 +16,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
         ⚠ CRIME SCENE — U.S. CONGRESS — 119TH SESSION — DO NOT IGNORE ⚠
       </div>
 
-      <div style={{ background: "#0d1117", borderBottom: "1px solid #30363d" }}>
+      <div style={{ background: "#0d1117" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
           <div className="flex items-center gap-2 mb-5">
