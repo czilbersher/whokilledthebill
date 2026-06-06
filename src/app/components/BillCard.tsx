@@ -63,24 +63,18 @@ function SponsorLink({ bill, name }: { bill: BillRow; name: string }) {
 }
 
 function ShareButton({ bill }: { bill: BillRow }) {
-  const days  = daysSince(bill.latest_action_date) ?? 0;
-  const title = bill.title.length > 80 ? bill.title.slice(0, 80) + "…" : bill.title;
-  const text  = `"${title}" — abandoned for ${days} days. No hearing. No vote.`;
-  const url   = bill.legislation_url ?? `https://whokilledthebill.com`;
-  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  const [open, setOpen] = useState(false);
   return (
-    
-      <a href={tweet}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-flex items-center gap-1 text-xs transition-colors px-3 py-1 rounded"
-      style={{ color: "#8b9198", border: "1px solid #30363d" }}
-    >
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.633l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-      </svg>
-      Share
-    </a>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1 text-xs transition-colors px-3 py-1 rounded"
+        style={{ color: "#8b9198", border: "1px solid #30363d", background: "none", cursor: "pointer" }}
+      >
+        Share
+      </button>
+      {open && <ShareModal bill={bill} onClose={() => setOpen(false)} />}
+    </>
   );
 }
 
