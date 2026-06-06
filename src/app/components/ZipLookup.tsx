@@ -17,20 +17,17 @@ export default function ZipLookup() {
     setError("");
     setLoading(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CIVIC_API_KEY;
       const res = await fetch(
-        `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${apiKey}`
+        `https://api.zippopotam.us/us/${zip}`
       );
-      const data = await res.json();
-      if (!data.officials || data.officials.length === 0) {
-        setError("No representatives found for that ZIP code. Try another.");
+      if (!res.ok) {
+        setError("ZIP code not found. Please try another.");
         setLoading(false);
         return;
       }
-      const official = data.officials[0];
-      const name = official.name;
-      const params = new URLSearchParams({ rep: name });
-      router.push(`/?${params.toString()}`);
+      const data = await res.json();
+      const state = data.places[0]["state abbreviation"];
+      router.push(`/?state=${encodeURIComponent(state)}`);
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -43,7 +40,7 @@ export default function ZipLookup() {
         <input
           type="text"
           value={zip}
-          onChange={(e) => setZip(e.target.value.slice(0, 5))}
+          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
           onKeyDown={(e) => e.key === "Enter" && handleLookup()}
           placeholder="Enter your ZIP code"
           maxLength={5}
