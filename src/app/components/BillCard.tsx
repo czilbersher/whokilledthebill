@@ -1,6 +1,6 @@
 "use client";
 
-import { usestate } from "react";
+import { useState } from "react";
 
 import { getCauseOfDeath } from "@/lib/causeOfDeath";
 import ShareModal from "@/app/components/ShareModal";
