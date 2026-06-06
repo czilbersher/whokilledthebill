@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function ZipLookup() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+  const [result, setResult] = useState<{ name: string; state: string; party: string; count: number } | null>(null);
 
   async function handleLookup() {
     if (zip.length !== 5 || isNaN(Number(zip))) {
@@ -15,19 +14,44 @@ export default function ZipLookup() {
       return;
     }
     setError("");
+    setResult(null);
     setLoading(true);
+
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CIVIC_API_KEY;
       const res = await fetch(
-        `https://api.zippopotam.us/us/${zip}`
+        `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorLowerBody&key=${apiKey}`
       );
-      if (!res.ok) {
-        setError("ZIP code not found. Please try another.");
-        setLoading(false);
+      const data = await res.json();
+
+      if (!data.officials || data.officials.length === 0) {
+        const fallback = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        if (!fallback.ok) {
+          setError("Could not find your representative. Try another ZIP code.");
+          setLoading(false);
+          return;
+        }
+        const fallbackData = await fallback.json();
+        const state = fallbackData.places[0]["state abbreviation"];
+        window.location.href = `/?state=${encodeURIComponent(state)}`;
         return;
       }
-      const data = await res.json();
-      const state = data.places[0]["state abbreviation"];
-      window.location.href = `/?state=${encodeURIComponent(state)}`;
+
+      const official = data.officials[0];
+      const name = official.name;
+      const party = official.party ?? "";
+
+      const stateRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
+      const stateData = await stateRes.json();
+      const state = stateData.places[0]["state abbreviation"];
+
+      const billRes = await fetch(`/api/rep-count?state=${state}`);
+      const billData = await billRes.json();
+      const count = billData.count ?? 0;
+
+      setResult({ name, state, party, count });
+      window.location.href = `/?state=${encodeURIComponent(state)}&rep=${encodeURIComponent(name)}`;
+
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -35,7 +59,7 @@ export default function ZipLookup() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "480px", margin: "0 auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "520px", margin: "0 auto" }}>
       <div style={{ display: "flex", gap: "8px" }}>
         <input
           type="text"
@@ -76,9 +100,26 @@ export default function ZipLookup() {
       {error && (
         <div style={{ fontSize: "13px", color: "#f87171" }}>{error}</div>
       )}
-      <div style={{ fontSize: "12px", color: "#8b9198" }}>
-        See every bill your representative introduced — and let die.
-      </div>
+      {result && (
+        <div style={{
+          borderLeft: "3px solid #dc2626",
+          background: "#F9F3EE",
+          border: "1px solid #DDC9B4",
+          borderRadius: "6px",
+          padding: "10px 14px",
+          fontSize: "14px",
+          color: "#111",
+          lineHeight: 1.6,
+        }}>
+          <span style={{ fontWeight: 700, color: "#dc2626" }}>Your representative is {result.name}.</span>{" "}
+          They introduced bills in the 119th Congress. Every one died in committee. No hearing. No vote. No explanation.
+        </div>
+      )}
+      {!result && !error && (
+        <div style={{ fontSize: "12px", color: "#8b9198" }}>
+          See every bill your representative introduced — and let die.
+        </div>
+      )}
     </div>
   );
 }
