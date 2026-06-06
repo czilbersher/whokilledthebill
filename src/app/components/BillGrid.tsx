@@ -33,6 +33,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
     if (party   !== "all") rows = rows.filter(b => b.sponsor_party   === party);
     if (policy  !== "all") rows = rows.filter(b => b.policy_area     === policy);
     if (minDays  > 0)      rows = rows.filter(b => daysSince(b.latest_action_date) >= minDays);
+    if (stateParam !== "") rows = rows.filter(b => (b.sponsor_state ?? "").toUpperCase() === stateParam.toUpperCase());
     if (search.trim()) {
       const q = search.toLowerCase();
       rows = rows.filter(b =>
@@ -40,7 +41,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
         (b.sponsor_name  ?? "").toLowerCase().includes(q) ||
         (b.policy_area   ?? "").toLowerCase().includes(q) ||
         b.number.includes(q)||
-        (b.sponsor_state ?? "").toLowerCase().includes(q)
+ 
       );
     }
     return rows;
