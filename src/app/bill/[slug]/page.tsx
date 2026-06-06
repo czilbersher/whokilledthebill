@@ -308,7 +308,7 @@ export default async function BillPage({
       {bill.legislation_url && (
           <div style={{ marginBottom: "2rem" }}>
             
-              href={bill.legislation_url}
+            <a href={bill.legislation_url}
               target="_blank"
               rel="noopener noreferrer"
               style={{
