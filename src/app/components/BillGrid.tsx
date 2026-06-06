@@ -21,7 +21,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   const [party,    setParty]    = useState("all");
   const [policy,   setPolicy]   = useState("all");
   const [minDays,  setMinDays]  = useState(0);
-  const [search,   setSearch]   = useState("");
+  const [search,    setSearch]  = useState(() => { if (typeof window !== "undefined") { const p = new URLSearchParams(window.location.search); return p.get("state") ?? p.get("rep") ?? ""; } return ""; });
   const [sortKey,  setSortKey]  = useState<SortKey>("days");
   const [page,     setPage]     = useState(1);
   const PER_PAGE = 48;
