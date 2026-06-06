@@ -63,7 +63,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
 
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
-      {stateParam && <div style={{ maxWidth: "42rem", margin: "0 auto", padding: "0 1rem", marginbottom: "1rem" }}><div style={{ background: "#21262d", borderRadius: "4px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" as const }}><span style={{ fontSize: "15px", color: "#dc2626", flexShrink: 0, fontWeight: 700 }}>&#9679;</span><span style={{ fontSize: "15px", color: "#8b9198" }}>Filtered to <span style={{ color: "#e6edf3", fontWeight: 600 }}>{stateParam}</span> — <span style={{ color: "#f5c518", fontWeight: 700 }}>{filtered.length.toLocaleString()} abandoned bills shown below.</span> Your representatives introduced every one. None survived.</span></div></div>}
+    {stateParam && <div style={{ maxWidth: "42rem", margin: "0 auto 1.5rem", padding: "0 1rem" }}><div style={{ background: "#21262d", borderRadius: "4px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" as const }}><span style={{ fontSize: "15px", color: "#dc2626", flexShrink: 0, fontWeight: 700 }}>&#9679;</span><span style={{ fontSize: "15px", color: "#8b9198" }}>Filtered to <span style={{ color: "#e6edf3", fontWeight: 600 }}>{stateParam}</span> — <span style={{ color: "#f5c518", fontWeight: 700 }}>{filtered.length.toLocaleString()} abandoned bills shown below.</span> Your representatives introduced every one. None survived.</span></div></div>}
       <div className="sticky top-14 z-20" style={{ background: "#161b22" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap gap-3 items-center">

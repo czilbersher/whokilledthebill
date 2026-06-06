@@ -97,11 +97,11 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             </div>
           </div>
 
-          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px" }}>
+          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px", marginBottom: "1rem" }}>
             These are the promises made to voters and the committees where they went to die.
             Search by sponsor, party, policy area, or how long the bill has been ignored.
           </p>
-          <ZipLookup />
+          <div style={{ marginTop: "1.5rem" }}><ZipLookup /></div>
           <p className="hidden">
           </p>
 
