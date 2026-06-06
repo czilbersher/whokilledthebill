@@ -30,9 +30,7 @@ export async function generateMetadata({
 
 function daysSince(date: string | null): number | null {
   if (!date) return null;
-  return Math.floor(
-    (Date.now() - new Date(date).getTime()) / 86_400_000
-  );
+  return Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000);
 }
 
 export default async function BillPage({
@@ -74,19 +72,11 @@ export default async function BillPage({
   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
 
   return (
-    <main
-      className="min-h-screen"
-      style={{ backgroundColor: "#0d1117" }}
-    >
+    <main className="min-h-screen" style={{ backgroundColor: "#0d1117" }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-
         <div className="mb-8">
-          <Link
-            href="/"
-            style={{ color: "#8b9198", fontSize: "14px" }}
-            className="hover:underline"
-          >
-            ← Back to all bills
+          <Link href="/" style={{ color: "#8b9198", fontSize: "14px" }}>
+            Back to all bills
           </Link>
         </div>
 
@@ -107,7 +97,8 @@ export default async function BillPage({
               marginBottom: "0.5rem",
             }}
           >
-            {bill.bill_type.toUpperCase()} {bill.number} · 119th Congress · {chamber}
+            {bill.bill_type.toUpperCase()} {bill.number} · 119th Congress ·{" "}
+            {chamber}
           </div>
           <h1
             style={{
@@ -144,7 +135,8 @@ export default async function BillPage({
             Died in Committee
           </div>
           <div style={{ fontSize: "14px", color: "#8b9198" }}>
-            {bill.latest_action_text || "Referred to committee — no hearing, no vote"}
+            {bill.latest_action_text ||
+              "Referred to committee — no hearing, no vote"}
           </div>
         </div>
 
@@ -175,13 +167,7 @@ export default async function BillPage({
             >
               Days Ignored
             </div>
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "#f5c518",
-              }}
-            >
+            <div style={{ fontSize: "28px", fontWeight: 700, color: "#f5c518" }}>
               {days?.toLocaleString()}
             </div>
           </div>
@@ -205,13 +191,7 @@ export default async function BillPage({
             >
               Introduced
             </div>
-            <div
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                color: "#e6edf3",
-              }}
-            >
+            <div style={{ fontSize: "16px", fontWeight: 600, color: "#e6edf3" }}>
               {bill.introduced_date}
             </div>
           </div>
@@ -235,13 +215,7 @@ export default async function BillPage({
             >
               Policy Area
             </div>
-            <div
-              style={{
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#e6edf3",
-              }}
-            >
+            <div style={{ fontSize: "14px", fontWeight: 600, color: "#e6edf3" }}>
               {bill.policy_area || "Uncategorized"}
             </div>
           </div>
@@ -289,12 +263,13 @@ export default async function BillPage({
                   fontWeight: 600,
                   textDecoration: "none",
                 }}
-                className="hover:underline"
               >
                 {bill.sponsor_name}
               </Link>
             ) : (
-              <span style={{ color: "#e6edf3", fontSize: "16px", fontWeight: 600 }}>
+              <span
+                style={{ color: "#e6edf3", fontSize: "16px", fontWeight: 600 }}
+              >
                 {bill.sponsor_name}
               </span>
             )}
@@ -305,18 +280,15 @@ export default async function BillPage({
           </div>
         </div>
 
-    {bill.legislation_url && (
+        {bill.legislation_url && (
           <div style={{ marginBottom: "2rem" }}>
             <Link
               href={bill.legislation_url}
-              target="_blank"
-              rel="noopener noreferrer"
               style={{
                 color: "#8b9198",
                 fontSize: "13px",
                 textDecoration: "none",
               }}
-              className="hover:underline"
             >
               View official record on Congress.gov
             </Link>
@@ -332,10 +304,8 @@ export default async function BillPage({
             flexWrap: "wrap",
           }}
         >
-          
+          <Link
             href={shareUrl}
-            target="_blank"
-            rel="noopener noreferrer"
             style={{
               backgroundColor: "#000000",
               color: "#ffffff",
@@ -345,9 +315,9 @@ export default async function BillPage({
               fontWeight: 600,
               textDecoration: "none",
             }}
-          <a>
+          >
             Share on X
-          </a>
+          </Link>
           <Link
             href="/"
             style={{
@@ -364,7 +334,6 @@ export default async function BillPage({
             See all 9,799 abandoned bills
           </Link>
         </div>
-
       </div>
     </main>
   );
