@@ -1,6 +1,9 @@
 "use client";
 
+import { usestate } from "react";
+
 import { getCauseOfDeath } from "@/lib/causeOfDeath";
+import ShareModal from "@/app/components/ShareModal";
 import type { BillRow } from "@/types/db";
 
 function daysSince(dateStr: string | null): number | null {
