@@ -43,7 +43,7 @@ export default async function RepPage({ params }: Props) {
 
   if (!bills || bills.length === 0) return notFound();
 
-  const rep = bills[0];
+  const rep = bills[0] as BillRow;
   const sponsorName = rep.sponsor_name ?? "Unknown Sponsor";
   const partyKey = rep.sponsor_party ?? "I";
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
