@@ -81,29 +81,39 @@ export default async function RepPage({ params }: Props) {
           </a>
         </div>
       </div>
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${partyColor}`}>
-                  {partyLabel}
-                </span>
-                {location && <span className="text-sm text-gray-500 font-mono">{location}</span>}
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">{sponsorName}</h1>
-              <p className="mt-2 text-gray-500 text-sm">
-                119th Congress · {rep.origin_chamber === "Senate" ? "Senator" : "Representative"}
-              </p>
-            </div>
-            <div className="flex gap-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-red-600">{bills.length}</div>
-                <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Bills abandoned</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-gray-800">{avgDays.toLocaleString()}</div>
-                <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Avg days ignored</div>
+ <div className="bg-white border-b border-gray-200">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+              <div className="flex flex-wrap items-start gap-6">
+                <img
+                  src={`https://bioguide.congress.gov/bioguide/photo/${rep.sponsor_bioguide_id?.[0]}/${rep.sponsor_bioguide_id}.jpg`}
+                  alt={sponsorName}
+                  width={100}
+                  height={120}
+                  style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${partyColor}`}>
+                      {partyLabel}
+                    </span>
+                    {location && <span className="text-sm text-gray-500 font-mono">{location}</span>}
+                  </div>
+                  <h1 className="text-3xl font-bold text-gray-900">{sponsorName}</h1>
+                  <p className="mt-2 text-gray-500 text-sm">
+                    119th Congress · {rep.origin_chamber === "Senate" ? "Senator" : "Representative"}
+                  </p>
+                </div>
+                <div className="flex gap-6">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-red-600">{bills.length}</div>
+                    <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Bills abandoned</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-gray-800">{avgDays.toLocaleString()}</div>
+                    <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Avg days ignored</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -111,7 +121,6 @@ export default async function RepPage({ params }: Props) {
             <p className="text-sm font-bold text-red-700">100% abandonment rate</p>
             <p className="text-sm text-red-600 mt-0.5">Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
           </div>
-        </div>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
