@@ -19,10 +19,12 @@ const PARTY_LABELS: Record<string, string> = {
   R: "Republican", D: "Democrat", I: "Independent",
 };
 
-const PARTY_COLORS: Record<string, string> = {
-  R: "text-red-700 bg-[#F9F3EE] border-red-200",
-  D: "text-blue-700 bg-blue-50 border-blue-200",
-  I: "text-gray-600 bg-gray-100 border-gray-300",
+const PARTY_BORDER: Record<string, string> = {
+  R: "#dc2626", D: "#1a3a6b", I: "#6b7280",
+};
+
+const PARTY_TEXT: Record<string, string> = {
+  R: "#dc2626", D: "#3b82f6", I: "#6b7280",
 };
 
 type Props = { params: Promise<{ bioguide_id: string }> };
@@ -36,17 +38,21 @@ export default async function RepPage({ params }: Props) {
     .select("*")
     .eq("sponsor_bioguide_id", bioguide_id)
     .eq("is_abandoned", true)
-    .order("latest_action_date", { ascending: true });
+    .order("latest_action_date", { ascending: true })
+    .limit(10000);
 
-  if (!bills || bills.length === 0) notFound();
+  if (!bills || bills.length === 0) return notFound();
 
   const rep = bills[0] as BillRow;
-  const sponsorName = (rep.sponsor_name ?? "Unknown").replace(/^(Rep\.|Sen\.)\s/, "");
-  const party = rep.sponsor_party ?? "I";
-  const partyLabel = PARTY_LABELS[party] ?? "Independent";
-  const partyColor = PARTY_COLORS[party] ?? PARTY_COLORS["I"];
+  const rawName = rep.sponsor_name ?? "Unknown Sponsor";
+  const sponsorName = rawName.replace(/\s*\[.*?\]\s*/g, "").trim();
+  const partyKey = rep.sponsor_party ?? "I";
+  const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
+  const borderColor = PARTY_BORDER[partyKey] ?? "#6b7280";
+  const partyTextColor = PARTY_TEXT[partyKey] ?? "#6b7280";
   const district = rep.sponsor_district ? `-${rep.sponsor_district}` : "";
   const location = rep.sponsor_state ? `${rep.sponsor_state}${district}` : "";
+  const chamber = rep.origin_chamber === "Senate" ? "Senator" : "Representative";
 
   const policyCounts: Record<string, number> = {};
   for (const b of bills as BillRow[]) {
@@ -61,101 +67,135 @@ export default async function RepPage({ params }: Props) {
     (bills as BillRow[]).reduce((sum, b) => sum + daysSince(b.latest_action_date), 0) / bills.length
   );
 
+  const photoUrl = `https://bioguide.congress.gov/bioguide/photo/${bioguide_id[0]}/${bioguide_id}.jpg`;
+  const tweetText = encodeURIComponent(`${sponsorName} introduced ${bills.length} bills in the 119th Congress. Every single one died in committee. No hearing. No vote. No explanation.\n\nwhokilledthebill.com/rep/${bioguide_id}`);
+
+  function ShareButton() {
+    return (
+      
+        href={`https://twitter.com/intent/tweet?text=${tweetText}`}
+        target="_blank"
+        rel="noreferrer"
+        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+        Share on X
+      </a>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
-     <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-sm text-red-600 hover:text-red-800 font-medium">
+    <div style={{ backgroundColor: "#f8f8f6", minHeight: "100vh" }}>
+
+      {/* Top nav bar */}
+      <div style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d" }}>
+        <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
             ← Back to all bills
           </Link>
-    <a    
-            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${sponsorName} introduced ${bills.length} bills in the 119th Congress. Every single one died in committee. No hearing. No vote. No explanation.`)}&url=${encodeURIComponent(`https://whokilledthebill.com/rep/${bioguide_id}`)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded hover:bg-gray-800 transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-            Share on X
-          </a>
+          <ShareButton />
         </div>
       </div>
- <div className="bg-white border-b border-gray-200">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-              <div className="flex flex-wrap items-start gap-6">
-                <img
-                  src={`https://bioguide.congress.gov/bioguide/photo/${rep.sponsor_bioguide_id?.[0]}/${rep.sponsor_bioguide_id}.jpg`}
-                  alt={sponsorName}
-                  width={100}
-                  height={120}
-                  style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }}
-                              />
-                <div style={{ flex: 1 }}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${partyColor}`}>
-                      {partyLabel}
-                    </span>
-                    {location && <span className="text-sm text-gray-500 font-mono">{location}</span>}
-                  </div>
-                  <h1 className="text-3xl font-bold text-gray-900">{sponsorName}</h1>
-                  <p className="mt-2 text-gray-500 text-sm">
-                    119th Congress · {rep.origin_chamber === "Senate" ? "Senator" : "Representative"}
-                  </p>
+
+      {/* Option C Header */}
+      <div style={{ backgroundColor: "#161b22", borderBottom: `4px solid ${borderColor}` }}>
+        <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
+            <img
+              src={photoUrl}
+              alt={sponsorName}
+              width={100}
+              height={120}
+              style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #30363d" }}
+            />
+            <div style={{ flex: 1, borderLeft: "0.5px solid #30363d", paddingLeft: "2rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Name</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{sponsorName}</div>
                 </div>
-                <div className="flex gap-6">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-red-600">{bills.length}</div>
-                    <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Bills abandoned</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-gray-800">{avgDays.toLocaleString()}</div>
-                    <div className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Avg days ignored</div>
-                  </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Party</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: partyTextColor }}>{partyLabel}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Chamber</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{chamber}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>State</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{location}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Bills abandoned</div>
+                  <div style={{ fontSize: "24px", fontWeight: 900, color: "#dc2626" }}>{bills.length}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Avg days ignored</div>
+                  <div style={{ fontSize: "24px", fontWeight: 900, color: "#f5c518" }}>{avgDays.toLocaleString()}</div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="mt-8 p-4 bg-[#F9F3EE] border border-[#DDC9B4] rounded-md">
-            <p className="text-sm font-bold text-red-700">100% abandonment rate</p>
-            <p className="text-sm text-red-600 mt-0.5">Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
-          </div>
-         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Abandoned Bills ({bills.length})</h2>
-          {(bills as BillRow[]).map((bill) => (
-            <div key={bill.id} className="bg-white rounded-md border border-gray-200 p-4 shadow-sm" style={{ borderLeft: "4px solid #dc2626" }}>
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold text-gray-500 hover:text-red-600 transition-colors">
-                  {bill.bill_type?.toUpperCase()} {bill.number}
-                </a>
-                <span className="text-sm font-bold text-red-600 whitespace-nowrap">{daysSince(bill.latest_action_date).toLocaleString()} days</span>
-              </div>
-              <p className="text-sm font-medium text-gray-900 leading-snug mb-2">{bill.title}</p>
-              <div className="flex flex-wrap gap-3 text-xs text-gray-400">
-                <span>Introduced {fmt(bill.introduced_date)}</span>
-                {bill.policy_area && <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded">{bill.policy_area}</span>}
-              </div>
-            </div>
-          ))}
         </div>
-        <div className="space-y-6">
-          <div className="bg-white rounded-md border border-gray-200 p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">Bills by Policy Area</h3>
-            <div className="space-y-2">
+      </div>
+
+      {/* Abandonment banner */}
+      <div style={{ maxWidth: "64rem", margin: "1.5rem auto 0", padding: "0 1.5rem" }}>
+        <div style={{ backgroundColor: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "1rem 1.25rem" }}>
+          <p style={{ fontSize: "14px", fontWeight: 700, color: "#dc2626", margin: 0 }}>100% abandonment rate</p>
+          <p style={{ fontSize: "14px", color: "#92400e", marginTop: "4px", marginBottom: 0 }}>Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div style={{ maxWidth: "64rem", margin: "2rem auto", padding: "0 1.5rem", display: "grid", gridTemplateColumns: "1fr 300px", gap: "2rem" }}>
+
+        {/* Bills list */}
+        <div>
+          <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", marginBottom: "1rem" }}>Abandoned Bills ({bills.length})</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {(bills as BillRow[]).map((bill) => (
+              <div key={bill.id} style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", borderLeft: "4px solid #dc2626", padding: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
+                  <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280", textDecoration: "none" }}>
+                    {bill.bill_type?.toUpperCase()} {bill.number}
+                  </a>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>{daysSince(bill.latest_action_date).toLocaleString()} days</span>
+                </div>
+                <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
+                  {bill.policy_area && (
+                    <span style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px" }}>{bill.policy_area}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
+            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>Bills by Policy Area</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {topPolicies.map(([area, count]) => (
-                <div key={area} className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-gray-600 leading-tight">{area}</span>
-                  <span className="text-sm font-bold text-red-600 shrink-0">{count}</span>
+                <div key={area} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "13px", color: "#374151" }}>{area}</span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626" }}>{count}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="bg-white rounded-md border border-gray-200 p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">About This Data</h3>
-            <p className="text-xs text-gray-500 leading-relaxed">Data sourced from the official Congress.gov API. A bill is considered abandoned if its only recorded actions are introduction and committee referral, with no subsequent hearing, markup, or floor vote for 180+ days.</p>
+          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
+            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>About This Data</h3>
+            <p style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.5, margin: 0 }}>Data sourced from the official Congress.gov API. Bills are marked abandoned if referred to committee with no hearing, markup, or vote recorded.</p>
           </div>
         </div>
+
       </div>
     </div>
   );
