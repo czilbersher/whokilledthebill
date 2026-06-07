@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { getCauseOfDeath } from "@/lib/causeOfDeath";
 import ShareModal from "@/app/components/ShareModal";
@@ -105,9 +106,9 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <DaysBadge date={bill.latest_action_date} />
         </div>
 
-        <h2 className="text-base font-semibold leading-snug" style={{ color: "#e6edf3" }}>
-          {bill.title.length > 110 ? bill.title.slice(0, 108) + "…" : bill.title}
-        </h2>
+        <Link href={`/bill/${bill.bill_type.toLowerCase()}-${bill.number}`} className="hover:underline"><h2 className="text-base font-semibold leading-snug" style={{ color: "#e6edf3" }}>
+              {bill.title.length > 110 ? bill.title.slice(0, 108) + "…" : bill.title}
+            </h2></Link>
 
         <div
           className="rounded px-3 py-2.5"
