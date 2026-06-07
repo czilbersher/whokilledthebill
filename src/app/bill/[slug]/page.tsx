@@ -78,6 +78,7 @@ export default async function RepPage({ params }: Props) {
             ← Back to all bills
           </Link>
           
+            <a 
             href={`https://twitter.com/intent/tweet?text=${tweetText}`}
             target="_blank"
             rel="noreferrer"
