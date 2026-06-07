@@ -90,8 +90,7 @@ export default async function RepPage({ params }: Props) {
                   width={100}
                   height={120}
                   style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
+                              />
                 <div style={{ flex: 1 }}>
                   <div className="flex items-center gap-3 mb-3">
                     <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${partyColor}`}>
