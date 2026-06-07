@@ -1,340 +1,194 @@
 import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { BillRow } from "@/types/db";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const [billType, ...rest] = slug.split("-");
-  const number = rest.join("-");
+function fmt(dateStr: string | null) {
+  if (!dateStr) return "Unknown";
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+  });
+}
 
+function daysSince(d: string | null) {
+  if (!d) return 0;
+  return Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000);
+}
+
+const PARTY_LABELS: Record<string, string> = {
+  R: "Republican", D: "Democrat", I: "Independent",
+};
+
+const PARTY_BORDER: Record<string, string> = {
+  R: "#dc2626", D: "#1a3a6b", I: "#6b7280",
+};
+
+const PARTY_TEXT: Record<string, string> = {
+  R: "#dc2626", D: "#3b82f6", I: "#6b7280",
+};
+
+type Props = { params: Promise<{ bioguide_id: string }> };
+
+export default async function RepPage({ params }: Props) {
+  const { bioguide_id } = await params;
   const supabase = createServerSupabaseClient();
+
   const { data: bills } = await supabase
     .from("bills")
     .select("*")
-    .ilike("bill_type", billType)
-    .eq("number", number)
-    .limit(1);
+    .eq("sponsor_bioguide_id", bioguide_id)
+    .eq("is_abandoned", true)
+    .order("latest_action_date", { ascending: true })
+    .limit(10000);
 
-  const bill = bills?.[0] as any;
-  if (!bill) return { title: "Bill Not Found | Who Killed the Bill?" };
+  if (!bills || bills.length === 0) return notFound();
 
-  return {
-    title: `${bill.title} | Who Killed the Bill?`,
-    description: `${bill.sponsor_name} introduced this bill on ${bill.introduced_date}. It was referred to committee and never heard from again. No hearing. No vote. No explanation.`,
-  };
-}
+  const rep = bills[0];
+  const sponsorName = rep.sponsor_name ?? "Unknown Sponsor";
+  const partyKey = rep.sponsor_party ?? "I";
+  const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
+  const borderColor = PARTY_BORDER[partyKey] ?? "#6b7280";
+  const partyTextColor = PARTY_TEXT[partyKey] ?? "#6b7280";
+  const district = rep.sponsor_district ? `-${rep.sponsor_district}` : "";
+  const location = rep.sponsor_state ? `${rep.sponsor_state}${district}` : "";
 
-function daysSince(date: string | null): number | null {
-  if (!date) return null;
-  return Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000);
-}
+  const policyCounts: Record<string, number> = {};
+  for (const b of bills as BillRow[]) {
+    const p = b.policy_area ?? "Uncategorized";
+    policyCounts[p] = (policyCounts[p] ?? 0) + 1;
+  }
+  const topPolicies = Object.entries(policyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
 
-export default async function BillPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const [billType, ...rest] = slug.split("-");
-  const number = rest.join("-");
+  const avgDays = Math.round(
+    (bills as BillRow[]).reduce((sum, b) => sum + daysSince(b.latest_action_date), 0) / bills.length
+  );
 
-  const supabase = createServerSupabaseClient();
-  const { data: bills } = await supabase
-    .from("bills")
-    .select("*")
-    .ilike("bill_type", billType)
-    .eq("number", number)
-    .limit(1);
-
-  const bill = bills?.[0] as any;
-  if (!bill) notFound();
-
-  const days = daysSince(bill.introduced_date);
-  const chamber = bill.origin_chamber === "Senate" ? "Senate" : "House";
-  const partyColor =
-    bill.sponsor_party === "R"
-      ? "#dc2626"
-      : bill.sponsor_party === "D"
-      ? "#3b82f6"
-      : "#6b7280";
-  const partyLabel =
-    bill.sponsor_party === "R"
-      ? "Republican"
-      : bill.sponsor_party === "D"
-      ? "Democrat"
-      : "Independent";
-
-  const shareText = `${bill.title} was introduced ${days} days ago. No hearing. No vote. No explanation. whokilledthebill.com/bill/${slug}`;
-  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+  const photoUrl = `https://bioguide.congress.gov/bioguide/photo/${bioguide_id[0]}/${bioguide_id}.jpg`;
+  const tweetText = encodeURIComponent(`${sponsorName} introduced ${bills.length} bills in the 119th Congress. Every single one died in committee. No hearing. No vote. No explanation.\n\nwhokilledthebill.com/rep/${bioguide_id}`);
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: "#0d1117" }}>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <div className="mb-8">
-          <Link href="/" style={{ color: "#8b9198", fontSize: "14px" }}>
-            Back to all bills
+    <div style={{ backgroundColor: "#f8f8f6", minHeight: "100vh" }}>
+
+      {/* Nav bar */}
+      <div style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d" }}>
+        <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
+            ← Back to all bills
           </Link>
-        </div>
-
-        <div
-          style={{
-            borderLeft: "4px solid #dc2626",
-            paddingLeft: "1.5rem",
-            marginBottom: "2rem",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#dc2626",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              marginBottom: "0.5rem",
-            }}
+          
+            href={`https://twitter.com/intent/tweet?text=${tweetText}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
           >
-            {bill.bill_type.toUpperCase()} {bill.number} · 119th Congress ·{" "}
-            {chamber}
-          </div>
-          <h1
-            style={{
-              fontSize: "28px",
-              fontWeight: 900,
-              color: "#e6edf3",
-              lineHeight: 1.25,
-              marginBottom: "1rem",
-            }}
-          >
-            {bill.title}
-          </h1>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: "#161b22",
-            borderLeft: "3px solid #dc2626",
-            borderRadius: "0 8px 8px 0",
-            padding: "1rem 1.25rem",
-            marginBottom: "2rem",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#dc2626",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              marginBottom: "0.375rem",
-            }}
-          >
-            Died in Committee
-          </div>
-          <div style={{ fontSize: "14px", color: "#8b9198" }}>
-            {bill.latest_action_text ||
-              "Referred to committee — no hearing, no vote"}
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1rem",
-            marginBottom: "2rem",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#161b22",
-              borderRadius: "8px",
-              padding: "1rem",
-              border: "0.5px solid #30363d",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "11px",
-                color: "#8b9198",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                marginBottom: "0.25rem",
-              }}
-            >
-              Days Ignored
-            </div>
-            <div style={{ fontSize: "28px", fontWeight: 700, color: "#f5c518" }}>
-              {days?.toLocaleString()}
-            </div>
-          </div>
-
-          <div
-            style={{
-              backgroundColor: "#161b22",
-              borderRadius: "8px",
-              padding: "1rem",
-              border: "0.5px solid #30363d",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "11px",
-                color: "#8b9198",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                marginBottom: "0.25rem",
-              }}
-            >
-              Introduced
-            </div>
-            <div style={{ fontSize: "16px", fontWeight: 600, color: "#e6edf3" }}>
-              {bill.introduced_date}
-            </div>
-          </div>
-
-          <div
-            style={{
-              backgroundColor: "#161b22",
-              borderRadius: "8px",
-              padding: "1rem",
-              border: "0.5px solid #30363d",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "11px",
-                color: "#8b9198",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                marginBottom: "0.25rem",
-              }}
-            >
-              Policy Area
-            </div>
-            <div style={{ fontSize: "14px", fontWeight: 600, color: "#e6edf3" }}>
-              {bill.policy_area || "Uncategorized"}
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: "#161b22",
-            borderRadius: "8px",
-            padding: "1.25rem",
-            border: "0.5px solid #30363d",
-            marginBottom: "2rem",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#8b9198",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              marginBottom: "0.75rem",
-            }}
-          >
-            Sponsor
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <span
-              style={{
-                backgroundColor: partyColor,
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: 700,
-                padding: "2px 10px",
-                borderRadius: "4px",
-              }}
-            >
-              {partyLabel}
-            </span>
-            {bill.sponsor_bioguide_id ? (
-              <Link
-                href={`/rep/${bill.sponsor_bioguide_id}`}
-                style={{
-                  color: "#e6edf3",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-              >
-                {bill.sponsor_name}
-              </Link>
-            ) : (
-              <span
-                style={{ color: "#e6edf3", fontSize: "16px", fontWeight: 600 }}
-              >
-                {bill.sponsor_name}
-              </span>
-            )}
-            <span style={{ color: "#8b9198", fontSize: "14px" }}>
-              {bill.sponsor_state}
-              {bill.sponsor_district ? `-${bill.sponsor_district}` : ""}
-            </span>
-          </div>
-        </div>
-
-        {bill.legislation_url && (
-          <div style={{ marginBottom: "2rem" }}>
-            <Link
-              href={bill.legislation_url}
-              style={{
-                color: "#8b9198",
-                fontSize: "13px",
-                textDecoration: "none",
-              }}
-            >
-              View official record on Congress.gov
-            </Link>
-          </div>
-        )}
-
-        <div
-          style={{
-            borderTop: "0.5px solid #30363d",
-            paddingTop: "2rem",
-            display: "flex",
-            gap: "1rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <Link
-            href={shareUrl}
-            style={{
-              backgroundColor: "#000000",
-              color: "#ffffff",
-              padding: "0.625rem 1.25rem",
-              borderRadius: "6px",
-              fontSize: "14px",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
             Share on X
-          </Link>
-          <Link
-            href="/"
-            style={{
-              backgroundColor: "#161b22",
-              color: "#e6edf3",
-              padding: "0.625rem 1.25rem",
-              borderRadius: "6px",
-              fontSize: "14px",
-              fontWeight: 600,
-              textDecoration: "none",
-              border: "0.5px solid #30363d",
-            }}
-          >
-            See all 9,799 abandoned bills
-          </Link>
+          </a>
         </div>
       </div>
-    </main>
+
+      {/* Option C Header — dark card with photo */}
+      <div style={{ backgroundColor: "#161b22", borderBottom: "4px solid " + borderColor }}>
+        <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
+            <img
+              src={photoUrl}
+              alt={sponsorName}
+              width={100}
+              height={120}
+              style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #30363d" }}
+            />
+            <div style={{ flex: 1, borderLeft: "0.5px solid #30363d", paddingLeft: "2rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Name</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{sponsorName}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Party</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: partyTextColor }}>{partyLabel}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Chamber</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{rep.origin_chamber === "Senate" ? "Senator" : "Representative"}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>State</div>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#e6edf3" }}>{location}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Bills abandoned</div>
+                  <div style={{ fontSize: "24px", fontWeight: 900, color: "#dc2626" }}>{bills.length}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "10px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.06em" }}>Avg days ignored</div>
+                  <div style={{ fontSize: "24px", fontWeight: 900, color: "#f5c518" }}>{avgDays.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Abandonment rate banner */}
+      <div style={{ maxWidth: "64rem", margin: "1.5rem auto 0", padding: "0 1.5rem" }}>
+        <div style={{ backgroundColor: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "1rem 1.25rem" }}>
+          <p style={{ fontSize: "14px", fontWeight: 700, color: "#dc2626", margin: 0 }}>100% abandonment rate</p>
+          <p style={{ fontSize: "14px", color: "#92400e", marginTop: "4px", marginBottom: 0 }}>Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div style={{ maxWidth: "64rem", margin: "2rem auto", padding: "0 1.5rem", display: "grid", gridTemplateColumns: "1fr 300px", gap: "2rem" }}>
+
+        {/* Bills list */}
+        <div>
+          <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", marginBottom: "1rem" }}>Abandoned Bills ({bills.length})</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {(bills as BillRow[]).map((bill) => (
+              <div key={bill.id} style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", borderLeft: "4px solid #dc2626", padding: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
+                  <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280", textDecoration: "none" }}>
+                    {bill.bill_type?.toUpperCase()} {bill.number}
+                  </a>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>{daysSince(bill.latest_action_date).toLocaleString()} days</span>
+                </div>
+                <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
+                  {bill.policy_area && (
+                    <span style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px" }}>{bill.policy_area}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
+            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>Bills by Policy Area</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {topPolicies.map(([area, count]) => (
+                <div key={area} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "13px", color: "#374151" }}>{area}</span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626" }}>{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
+            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>About This Data</h3>
+            <p style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.5, margin: 0 }}>Data sourced from the official Congress.gov API. Bills are marked abandoned if referred to committee with no hearing, markup, or vote recorded.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }
