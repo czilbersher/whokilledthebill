@@ -121,8 +121,7 @@ export default async function RepPage({ params }: Props) {
             <p className="text-sm font-bold text-red-700">100% abandonment rate</p>
             <p className="text-sm text-red-600 mt-0.5">Every bill this member introduced in the 119th Congress died in committee with no hearing, no vote, and no explanation.</p>
           </div>
-      </div>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Abandoned Bills ({bills.length})</h2>
           {(bills as BillRow[]).map((bill) => (
