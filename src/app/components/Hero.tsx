@@ -1,5 +1,6 @@
-
+import { Suspense } from "react";
 import ZipLookup from "@/app/components/ZipLookup";
+
 interface HeroProps {
   totalBills: number;
   abandonedBills: number;
@@ -12,7 +13,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
         className="w-full py-1.5 text-center text-xs font-black tracking-widest"
         style={{ background: "#f5c518", color: "#000" }}
       >
-        ⚠ CRIME SCENE — U.S. CONGRESS — 119TH SESSION — DO NOT IGNORE ⚠
+        &#9888; CRIME SCENE &#8212; U.S. CONGRESS &#8212; 119TH SESSION &#8212; DO NOT IGNORE &#9888;
       </div>
 
       <div style={{ background: "#0d1117" }}>
@@ -48,7 +49,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
           </p>
 
           <p className="text-base font-semibold mb-8" style={{ color: "#f5c518" }}>
-            ⚠ No, this isn&#39;t a bug. That&#39;s the point.
+            &#9888; No, this isn&#39;t a bug. That&#39;s the point.
           </p>
 
           <div className="grid grid-cols-3 gap-3 mb-8 max-w-2xl">
@@ -58,54 +59,4 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             >
               <div
                 className="font-black mb-1"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1 }}
-              >
-                {totalBills.toLocaleString()}
-              </div>
-              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
-                Bills introduced
-              </div>
-            </div>
-            <div
-              className="rounded-lg p-4"
-              style={{ background: "#161b22", border: "1px solid #30363d" }}
-            >
-              <div
-                className="font-black mb-1"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}
-              >
-                0
-              </div>
-              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
-                Received a hearing
-              </div>
-            </div>
-            <div
-              className="rounded-lg p-4"
-              style={{ background: "#161b22", border: "1px solid #30363d" }}
-            >
-              <div
-                className="font-black mb-1"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}
-              >
-                518
-              </div>
-              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
-                Days, longest cold case
-              </div>
-            </div>
-          </div>
-
-          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px", marginBottom: "1rem" }}>
-            These are the promises made to voters and the committees where they went to die.
-            Search by sponsor, party, policy area, or how long the bill has been ignored.
-          </p>
-          <div style={{ marginTop: "1.5rem" }}><ZipLookup /></div>
-          <p className="hidden">
-          </p>
-
-        </div>
-      </div>
-    </header>
-  );
-}
+                style={{ fontSize: "clamp(28px, 4vw, 40px)", color:
