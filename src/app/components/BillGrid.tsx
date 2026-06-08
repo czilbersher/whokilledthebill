@@ -19,7 +19,8 @@ interface Props {
 export default function BillGrid({ bills, policyAreas }: Props) {
   const [chamber,  setChamber]  = useState("all");
   const [party,    setParty]    = useState("all");
- const [policy,    setPolicy]    = useState(() => { if (typeof window !== "undefined") { const p = new URLSearchParams(window.location.search); return p.get("policy") ?? "all"; } return "all"; });
+ const [policy,    setPolicy]    = useState("all");
+ useEffect(() => { if (typeof window !== "undefined") { const p = new URLSearchParams(window.location.search); const v = p.get("policy"); if (v) setPolicy(v); } }, []);import { useState, useMemo, useEffect } from "react";
   const [minDays,  setMinDays]  = useState(0);
   const [search,    setSearch]  = useState(() => { if (typeof window !== "undefined") { const p = new URLSearchParams(window.location.search); return p.get("state") ?? p.get("rep") ?? ""; } return ""; });
   const [sortKey,  setSortKey]  = useState<SortKey>("days");
