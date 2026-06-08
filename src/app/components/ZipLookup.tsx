@@ -25,8 +25,8 @@ export default function ZipLookup() {
       }
       const data = await res.json();
       const state = data.places[0]["state abbreviation"];
-      router.push(`/?state=${encodeURIComponent(state)}`);
-    } catch {
+ console.log("state found:", state);
+router.push(`/?state=${encodeURIComponent(state)}`);
       setError("Something went wrong. Please try again.");
     }
     setLoading(false);
