@@ -22,6 +22,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   const [policy,   setPolicy]   = useState("all");
   const [minDays,  setMinDays]  = useState(0);
   const [search,   setSearch]   = useState("");
+  const [stateFilter, setStateFilter] = useState("");
   const [sortKey,  setSortKey]  = useState<SortKey>("days");
   const [page,     setPage]     = useState(1);
   const PER_PAGE = 48;
@@ -34,7 +35,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
       const stateParam = p.get("state");
       if (policyParam) setPolicy(policyParam);
       if (repParam) setSearch(repParam);
-      if (stateParam) setChamber("all");
+      if (stateParam) setStateFilter(stateParam.toUpperCase());
     }
   }, []);
 
@@ -43,6 +44,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
     if (chamber !== "all") rows = rows.filter(b => b.origin_chamber === chamber);
     if (party   !== "all") rows = rows.filter(b => b.sponsor_party   === party);
     if (policy  !== "all") rows = rows.filter(b => b.policy_area     === policy);
+    if (stateFilter)       rows = rows.filter(b => b.sponsor_state?.toUpperCase() === stateFilter);
     if (minDays > 0)       rows = rows.filter(b => (daysSince(b.latest_action_date) ?? 0) >= minDays);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -50,8 +52,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
         b.title?.toLowerCase().includes(q) ||
         b.sponsor_name?.toLowerCase().includes(q) ||
         b.number?.toLowerCase().includes(q) ||
-        b.policy_area?.toLowerCase().includes(q) ||
-        b.sponsor_state?.toLowerCase().includes(q)
+        b.policy_area?.toLowerCase().includes(q)
       );
     }
     return [...rows].sort((a, b) => {
@@ -60,7 +61,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
       if (sortKey === "sponsor")     return (a.sponsor_name ?? "").localeCompare(b.sponsor_name ?? "");
       return 0;
     });
-  }, [bills, chamber, party, policy, minDays, search, sortKey]);
+  }, [bills, chamber, party, policy, minDays, search, sortKey, stateFilter]);
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -121,11 +122,4 @@ export default function BillGrid({ bills, policyAreas }: Props) {
 
       {totalPages > 1 && (
         <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "2rem", flexWrap: "wrap" }}>
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page === 1 ? "not-allowed" : "pointer", opacity: page === 1 ? 0.5 : 1 }}>Previous</button>
-          <span style={{ padding: "8px 16px", color: "#8b9198" }}>Page {page} of {totalPages}</span>
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page === totalPages ? "not-allowed" : "pointer", opacity: page === totalPages ? 0.5 : 1 }}>Next</button>
-        </div>
-      )}
-    </div>
-  );
-}
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page
