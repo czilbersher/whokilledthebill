@@ -2,13 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
-
-function fmt(dateStr: string | null) {
-  if (!dateStr) return "Unknown";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
-}
+import RepBillList from "@/app/components/RepBillList";
 
 function daysSince(d: string | null) {
   if (!d) return 0;
@@ -60,8 +54,7 @@ export default async function RepPage({ params }: Props) {
     policyCounts[p] = (policyCounts[p] ?? 0) + 1;
   }
   const topPolicies = Object.entries(policyCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
+    .sort((a, b) => b[1] - a[1]);
 
   const avgDays = Math.round(
     (bills as BillRow[]).reduce((sum, b) => sum + daysSince(b.latest_action_date), 0) / bills.length
@@ -73,7 +66,6 @@ export default async function RepPage({ params }: Props) {
   function ShareButton() {
     return (
       
-        <a 
         href={`https://twitter.com/intent/tweet?text=${tweetText}`}
         target="_blank"
         rel="noreferrer"
@@ -151,51 +143,9 @@ export default async function RepPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Main content */}
-      <div style={{ maxWidth: "64rem", margin: "2rem auto", padding: "0 1.5rem", display: "grid", gridTemplateColumns: "1fr 300px", gap: "2rem" }}>
+      {/* Interactive bill list */}
+      <RepBillList bills={bills as BillRow[]} topPolicies={topPolicies} />
 
-        {/* Bills list */}
-        <div>
-          <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", marginBottom: "1rem" }}>Abandoned Bills ({bills.length})</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            {(bills as BillRow[]).map((bill) => (
-              <div key={bill.id} style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", borderLeft: "4px solid #dc2626", padding: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
-                  <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280", textDecoration: "none" }}>
-                    {bill.bill_type?.toUpperCase()} {bill.number}
-                  </a>
-                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>{daysSince(bill.latest_action_date).toLocaleString()} days</span>
-                </div>
-                <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
-                  <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
-            {bill.policy_area && <Link href={`/?policy=${encodeURIComponent(bill.policy_area)}`} style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", textDecoration: "none" }}>{bill.policy_area}</Link>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
-            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem" }}>Bills by Policy Area</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {topPolicies.map(([area, count]) => (
-                <div key={area} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
- <Link href={`/?policy=${encodeURIComponent(area)}`} style={{ fontSize: "13px", color: "#374151", textDecoration: "none" }}>{area}</Link>
-                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626" }}>{count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", padding: "1.25rem" }}>
-            <h3 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>About This Data</h3>
-            <p style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.5, margin: 0 }}>Data sourced from the official Congress.gov API. Bills are marked abandoned if referred to committee with no hearing, markup, or vote recorded.</p>
-          </div>
-        </div>
-
-      </div>
     </div>
   );
 }
