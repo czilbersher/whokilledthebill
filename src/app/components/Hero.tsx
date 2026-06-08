@@ -1,4 +1,3 @@
-"use client";
 
 import ZipLookup from "@/app/components/ZipLookup";
 interface HeroProps {
