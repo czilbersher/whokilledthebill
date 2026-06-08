@@ -169,9 +169,7 @@ export default async function RepPage({ params }: Props) {
                 <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
                   <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
-                  {bill.policy_area && (
-                    <span style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px" }}>{bill.policy_area}</span>
-                  )}
+             <Link href={`/?policy=${encodeURIComponent(bill.policy_area)}`} style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", textDecoration: "none" }}>{bill.policy_area}</Link>
                 </div>
               </div>
             ))}
@@ -185,7 +183,7 @@ export default async function RepPage({ params }: Props) {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {topPolicies.map(([area, count]) => (
                 <div key={area} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "13px", color: "#374151" }}>{area}</span>
+ <Link href={`/?policy=${encodeURIComponent(area)}`} style={{ fontSize: "13px", color: "#374151", textDecoration: "none" }}>{area}</Link>
                   <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626" }}>{count}</span>
                 </div>
               ))}
