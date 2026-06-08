@@ -19,30 +19,32 @@ interface Props {
 
 export default function BillGrid({ bills, policyAreas }: Props) {
   const searchParams = useSearchParams();
+  const urlPolicy = searchParams.get("policy") ?? "all";
+  const urlSearch = searchParams.get("rep") ?? "";
+  const urlState  = searchParams.get("state")?.toUpperCase() ?? "";
 
-  const initialPolicy = searchParams.get("policy") ?? "all";
-  const initialSearch = searchParams.get("rep") ?? "";
-  const initialState  = searchParams.get("state")?.toUpperCase() ?? "";
-
-  const [chamber,     setChamber]     = useState("all");
-  const [party,       setParty]       = useState("all");
-  const [policy,      setPolicy]      = useState(initialPolicy);
-  const [minDays,     setMinDays]     = useState(0);
-  const [search,      setSearch]      = useState(initialSearch);
-  const [stateFilter, setStateFilter] = useState(initialState);
-  const [sortKey,     setSortKey]     = useState<SortKey>("days");
-  const [page,        setPage]        = useState(1);
+  const [chamber,  setChamber]  = useState("all");
+  const [party,    setParty]    = useState("all");
+  const [policy,   setPolicy]   = useState("all");
+  const [minDays,  setMinDays]  = useState(0);
+  const [search,   setSearch]   = useState("");
+  const [sortKey,  setSortKey]  = useState<SortKey>("days");
+  const [page,     setPage]     = useState(1);
   const PER_PAGE = 48;
+
+  const effectivePolicy = urlPolicy !== "all" ? urlPolicy : policy;
+  const effectiveSearch = urlSearch !== "" ? urlSearch : search;
+  const effectiveState  = urlState;
 
   const filtered = useMemo(() => {
     let rows = bills;
-    if (chamber !== "all") rows = rows.filter(b => b.origin_chamber === chamber);
-    if (party   !== "all") rows = rows.filter(b => b.sponsor_party   === party);
-    if (policy  !== "all") rows = rows.filter(b => b.policy_area     === policy);
-    if (stateFilter)       rows = rows.filter(b => b.sponsor_state?.toUpperCase() === stateFilter);
-    if (minDays > 0)       rows = rows.filter(b => (daysSince(b.latest_action_date) ?? 0) >= minDays);
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    if (chamber !== "all")   rows = rows.filter(b => b.origin_chamber === chamber);
+    if (party   !== "all")   rows = rows.filter(b => b.sponsor_party   === party);
+    if (effectivePolicy !== "all") rows = rows.filter(b => b.policy_area === effectivePolicy);
+    if (effectiveState)      rows = rows.filter(b => b.sponsor_state?.toUpperCase() === effectiveState);
+    if (minDays > 0)         rows = rows.filter(b => (daysSince(b.latest_action_date) ?? 0) >= minDays);
+    if (effectiveSearch.trim()) {
+      const q = effectiveSearch.toLowerCase();
       rows = rows.filter(b =>
         b.title?.toLowerCase().includes(q) ||
         b.sponsor_name?.toLowerCase().includes(q) ||
@@ -56,7 +58,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
       if (sortKey === "sponsor")    return (a.sponsor_name ?? "").localeCompare(b.sponsor_name ?? "");
       return 0;
     });
-  }, [bills, chamber, party, policy, minDays, search, sortKey, stateFilter]);
+  }, [bills, chamber, party, effectivePolicy, minDays, effectiveSearch, sortKey, effectiveState]);
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -69,7 +71,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
           <input
             type="text"
             placeholder="Search bills, sponsors, keywords"
-            value={search}
+            value={effectiveSearch}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             style={{ width: "100%", padding: "8px 8px 8px 32px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", fontSize: "14px", boxSizing: "border-box" }}
           />
@@ -95,7 +97,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
           <option value={365}>365+ days</option>
         </select>
 
-        <select value={policy} onChange={e => { setPolicy(e.target.value); setPage(1); }} style={{ padding: "8px 12px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", fontSize: "14px" }}>
+        <select value={effectivePolicy} onChange={e => { setPolicy(e.target.value); setPage(1); }} style={{ padding: "8px 12px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", fontSize: "14px" }}>
           <option value="all">All policy areas</option>
           {policyAreas.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
