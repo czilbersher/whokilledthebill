@@ -6,7 +6,7 @@ export default function ZipLookup() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<{ name: string } | null>(null);
+  const [result, setResult] = useState<{ state: string; stateName: string } | null>(null);
 
   async function handleLookup() {
     if (zip.length !== 5 || isNaN(Number(zip))) {
@@ -17,29 +17,19 @@ export default function ZipLookup() {
     setResult(null);
     setLoading(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CIVIC_API_KEY;
-      const url = `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${apiKey}`;
-      const res = await fetch(url);
+      const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+      if (!res.ok) {
+        setError("ZIP code not found. Please try another.");
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
-
-      if (data.error) {
-        setError(`API error: ${data.error.message}`);
-        setLoading(false);
-        return;
-      }
-
-      if (!data.officials || data.officials.length === 0) {
-        setError("No representatives found for that ZIP code. Try another.");
-        setLoading(false);
-        return;
-      }
-
-      const name = data.officials[0].name;
-      setResult({ name });
-      window.location.href = `/?rep=${encodeURIComponent(name)}`;
-
-    } catch (err) {
-      setError(`Error: ${String(err)}`);
+      const state = data.places[0]["state abbreviation"];
+      const stateName = data.places[0]["state"];
+      setResult({ state, stateName });
+      window.location.href = `/?state=${encodeURIComponent(state)}`;
+    } catch {
+      setError("Something went wrong. Please try again.");
     }
     setLoading(false);
   }
@@ -88,7 +78,7 @@ export default function ZipLookup() {
       )}
       {result && (
         <div style={{ background: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "10px 14px", fontSize: "14px", color: "#111", lineHeight: 1.6 }}>
-          <span style={{ fontWeight: 700, color: "#dc2626" }}>Your representative is {result.name}.</span> They introduced bills in the 119th Congress. Every one died in committee. No hearing. No vote. No explanation.
+          <span style={{ fontWeight: 700, color: "#dc2626" }}>Showing abandoned bills from {result.stateName}.</span> These are the promises your representatives made — and abandoned.
         </div>
       )}
       {!result && !error && (
