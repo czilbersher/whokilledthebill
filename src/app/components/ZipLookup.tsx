@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ZipLookup() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<{ state: string; stateName: string } | null>(null);
+  const router = useRouter();
 
   async function handleLookup() {
     if (zip.length !== 5 || isNaN(Number(zip))) {
@@ -14,7 +15,6 @@ export default function ZipLookup() {
       return;
     }
     setError("");
-    setResult(null);
     setLoading(true);
     try {
       const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
@@ -25,9 +25,7 @@ export default function ZipLookup() {
       }
       const data = await res.json();
       const state = data.places[0]["state abbreviation"];
-      const stateName = data.places[0]["state"];
-      setResult({ state, stateName });
-      window.location.href = `/?state=${encodeURIComponent(state)}`;
+      router.push(`/?state=${encodeURIComponent(state)}`);
     } catch {
       setError("Something went wrong. Please try again.");
     }
@@ -70,18 +68,13 @@ export default function ZipLookup() {
             whiteSpace: "nowrap",
           }}
         >
-          {loading ? "Looking up..." : "Find my rep →"}
+          {loading ? "Looking up..." : "Find my rep \u2192"}
         </button>
       </div>
       {error && (
         <div style={{ fontSize: "13px", color: "#f87171" }}>{error}</div>
       )}
-      {result && (
-        <div style={{ background: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "10px 14px", fontSize: "14px", color: "#111", lineHeight: 1.6 }}>
-          <span style={{ fontWeight: 700, color: "#dc2626" }}>Showing abandoned bills from {result.stateName}.</span> These are the promises your representatives made — and abandoned.
-        </div>
-      )}
-      {!result && !error && (
+      {!error && (
         <div style={{ fontSize: "12px", color: "#8b9198" }}>
           See every bill your representative introduced — and let die.
         </div>
