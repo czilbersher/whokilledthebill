@@ -29,8 +29,12 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const p = new URLSearchParams(window.location.search);
-      const v = p.get("policy");
-      if (v) setPolicy(v);
+      const policyParam = p.get("policy");
+      const repParam = p.get("rep");
+      const stateParam = p.get("state");
+      if (policyParam) setPolicy(policyParam);
+      if (repParam) setSearch(repParam);
+      if (stateParam) setChamber("all");
     }
   }, []);
 
@@ -46,7 +50,8 @@ export default function BillGrid({ bills, policyAreas }: Props) {
         b.title?.toLowerCase().includes(q) ||
         b.sponsor_name?.toLowerCase().includes(q) ||
         b.number?.toLowerCase().includes(q) ||
-        b.policy_area?.toLowerCase().includes(q)
+        b.policy_area?.toLowerCase().includes(q) ||
+        b.sponsor_state?.toLowerCase().includes(q)
       );
     }
     return [...rows].sort((a, b) => {
