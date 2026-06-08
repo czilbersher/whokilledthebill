@@ -6,7 +6,7 @@ export default function ZipLookup() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<{ name: string; state: string; party: string } | null>(null);
+  const [result, setResult] = useState<{ name: string; state: string } | null>(null);
 
   async function handleLookup() {
     if (zip.length !== 5 || isNaN(Number(zip))) {
@@ -17,28 +17,21 @@ export default function ZipLookup() {
     setResult(null);
     setLoading(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CIVIC_API_KEY;
-      const res = await fetch(
-        `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${apiKey}`
-      );
+      const res = await fetch(`https://api.whorepresents.me/zip/${zip}`);
       const data = await res.json();
 
-      if (!data.officials || data.officials.length === 0) {
+      if (!data || !data.representatives || data.representatives.length === 0) {
         setError("No representatives found for that ZIP code. Try another.");
         setLoading(false);
         return;
       }
 
-      const official = data.officials[0];
-      const name = official.name;
-      const party = official.party ?? "";
+      const rep = data.representatives[0];
+      const name = rep.name;
+      const state = rep.state;
 
-      const stateRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
-      const stateData = await stateRes.json();
-      const state = stateData.places[0]["state abbreviation"];
-
-      setResult({ name, state, party });
-      window.location.href = `/?state=${encodeURIComponent(state)}&rep=${encodeURIComponent(name)}`;
+      setResult({ name, state });
+      window.location.href = `/?rep=${encodeURIComponent(name)}`;
 
     } catch {
       setError("Something went wrong. Please try again.");
