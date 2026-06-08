@@ -6,7 +6,7 @@ export default function ZipLookup() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<{ name: string; state: string; party: string; count: number } | null>(null);
+  const [result, setResult] = useState<{ name: string; state: string; party: string } | null>(null);
 
   async function handleLookup() {
     if (zip.length !== 5 || isNaN(Number(zip))) {
@@ -16,24 +16,16 @@ export default function ZipLookup() {
     setError("");
     setResult(null);
     setLoading(true);
-
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_CIVIC_API_KEY;
       const res = await fetch(
-        `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorLowerBody&key=${apiKey}`
+        `https://www.googleapis.com/civicinfo/v2/representatives?address=${zip}&levels=country&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${apiKey}`
       );
       const data = await res.json();
 
       if (!data.officials || data.officials.length === 0) {
-        const fallback = await fetch(`https://api.zippopotam.us/us/${zip}`);
-        if (!fallback.ok) {
-          setError("Could not find your representative. Try another ZIP code.");
-          setLoading(false);
-          return;
-        }
-        const fallbackData = await fallback.json();
-        const state = fallbackData.places[0]["state abbreviation"];
-        window.location.href = `/?state=${encodeURIComponent(state)}`;
+        setError("No representatives found for that ZIP code. Try another.");
+        setLoading(false);
         return;
       }
 
@@ -45,11 +37,7 @@ export default function ZipLookup() {
       const stateData = await stateRes.json();
       const state = stateData.places[0]["state abbreviation"];
 
-      const billRes = await fetch(`/api/rep-count?state=${state}`);
-      const billData = await billRes.json();
-      const count = billData.count ?? 0;
-
-      setResult({ name, state, party, count });
+      setResult({ name, state, party });
       window.location.href = `/?state=${encodeURIComponent(state)}&rep=${encodeURIComponent(name)}`;
 
     } catch {
@@ -59,13 +47,13 @@ export default function ZipLookup() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "520px", margin: "0 auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "480px", margin: "0 auto" }}>
       <div style={{ display: "flex", gap: "8px" }}>
         <input
           type="text"
           value={zip}
-          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
-          onKeyDown={(e) => e.key === "Enter" && handleLookup()}
+          onChange={e => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
+          onKeyDown={e => e.key === "Enter" && handleLookup()}
           placeholder="Enter your ZIP code"
           maxLength={5}
           style={{
@@ -94,25 +82,15 @@ export default function ZipLookup() {
             whiteSpace: "nowrap",
           }}
         >
-          {loading ? "Looking up…" : "Find my rep →"}
+          {loading ? "Looking up..." : "Find my rep →"}
         </button>
       </div>
       {error && (
         <div style={{ fontSize: "13px", color: "#f87171" }}>{error}</div>
       )}
       {result && (
-        <div style={{
-          borderLeft: "3px solid #dc2626",
-          background: "#F9F3EE",
-          border: "1px solid #DDC9B4",
-          borderRadius: "6px",
-          padding: "10px 14px",
-          fontSize: "14px",
-          color: "#111",
-          lineHeight: 1.6,
-        }}>
-          <span style={{ fontWeight: 700, color: "#dc2626" }}>Your representative is {result.name}.</span>{" "}
-          They introduced bills in the 119th Congress. Every one died in committee. No hearing. No vote. No explanation.
+        <div style={{ borderLeft: "3px solid #dc2626", background: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "10px 14px", fontSize: "14px", color: "#111", lineHeight: 1.6 }}>
+          <span style={{ fontWeight: 700, color: "#dc2626" }}>Your representative is {result.name}.</span> They introduced bills in the 119th Congress. Every one died in committee. No hearing. No vote. No explanation.
         </div>
       )}
       {!result && !error && (
