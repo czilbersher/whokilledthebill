@@ -169,7 +169,7 @@ export default async function RepPage({ params }: Props) {
                 <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
                   <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
-             <Link href={`/?policy=${encodeURIComponent(bill.policy_area)}`} style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", textDecoration: "none" }}>{bill.policy_area}</Link>
+            {bill.policy_area && <Link href={`/?policy=${encodeURIComponent(bill.policy_area)}`} style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", textDecoration: "none" }}>{bill.policy_area}</Link>}
                 </div>
               </div>
             ))}
