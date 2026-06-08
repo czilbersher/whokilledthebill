@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase";
 import Hero from "@/app/components/Hero";
 import BillGrid from "@/app/components/BillGrid";
@@ -38,7 +39,9 @@ export default async function HomePage() {
         totalBills={totalCount ?? 0}
         abandonedBills={abandonedCount ?? 0}
       />
-      <BillGrid bills={bills ?? []} policyAreas={policyAreas} />
+      <Suspense fallback={null}>
+        <BillGrid bills={bills ?? []} policyAreas={policyAreas} />
+      </Suspense>
       <footer style={{ background: "#161b22", borderTop: "1px solid #30363d" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-wrap gap-6 justify-between items-start">
@@ -64,7 +67,7 @@ export default async function HomePage() {
               style={{ color: "#8b9198" }}
             >
               <p>119th Congress</p>
-              <p>Jan 3, 2025 – present</p>
+              <p>Jan 3, 2025 &#8211; present</p>
               <p className="mt-1">Data: Congress.gov</p>
               <p className="mt-1">Last updated: June 5, 2026</p>
             </div>
