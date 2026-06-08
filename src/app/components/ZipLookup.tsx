@@ -25,8 +25,9 @@ export default function ZipLookup() {
       }
       const data = await res.json();
       const state = data.places[0]["state abbreviation"];
- console.log("state found:", state);
-router.push(`/?state=${encodeURIComponent(state)}`);
+      console.log("state found:", state);
+      router.push(`/?state=${encodeURIComponent(state)}`);
+    } catch {
       setError("Something went wrong. Please try again.");
     }
     setLoading(false);
@@ -68,7 +69,7 @@ router.push(`/?state=${encodeURIComponent(state)}`);
             whiteSpace: "nowrap",
           }}
         >
-          {loading ? "Looking up..." : "Find my rep \u2192"}
+          {loading ? "Looking up..." : "Find my rep"}
         </button>
       </div>
       {error && (
