@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import BillCard from "./BillCard";
 import type { BillRow } from "@/types/db";
 
@@ -17,27 +18,21 @@ interface Props {
 }
 
 export default function BillGrid({ bills, policyAreas }: Props) {
-  const [chamber,  setChamber]  = useState("all");
-  const [party,    setParty]    = useState("all");
-  const [policy,   setPolicy]   = useState("all");
-  const [minDays,  setMinDays]  = useState(0);
-  const [search,   setSearch]   = useState("");
-  const [stateFilter, setStateFilter] = useState("");
-  const [sortKey,  setSortKey]  = useState<SortKey>("days");
-  const [page,     setPage]     = useState(1);
-  const PER_PAGE = 48;
+  const searchParams = useSearchParams();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const p = new URLSearchParams(window.location.search);
-      const policyParam = p.get("policy");
-      const repParam = p.get("rep");
-      const stateParam = p.get("state");
-      if (policyParam) setPolicy(policyParam);
-      if (repParam) setSearch(repParam);
-      if (stateParam) setStateFilter(stateParam.toUpperCase());
-    }
-  }, []);
+  const initialPolicy = searchParams.get("policy") ?? "all";
+  const initialSearch = searchParams.get("rep") ?? "";
+  const initialState  = searchParams.get("state")?.toUpperCase() ?? "";
+
+  const [chamber,     setChamber]     = useState("all");
+  const [party,       setParty]       = useState("all");
+  const [policy,      setPolicy]      = useState(initialPolicy);
+  const [minDays,     setMinDays]     = useState(0);
+  const [search,      setSearch]      = useState(initialSearch);
+  const [stateFilter, setStateFilter] = useState(initialState);
+  const [sortKey,     setSortKey]     = useState<SortKey>("days");
+  const [page,        setPage]        = useState(1);
+  const PER_PAGE = 48;
 
   const filtered = useMemo(() => {
     let rows = bills;
@@ -56,9 +51,9 @@ export default function BillGrid({ bills, policyAreas }: Props) {
       );
     }
     return [...rows].sort((a, b) => {
-      if (sortKey === "days")        return (daysSince(a.latest_action_date) ?? 0) > (daysSince(b.latest_action_date) ?? 0) ? -1 : 1;
-      if (sortKey === "introduced")  return (a.introduced_date ?? "") < (b.introduced_date ?? "") ? -1 : 1;
-      if (sortKey === "sponsor")     return (a.sponsor_name ?? "").localeCompare(b.sponsor_name ?? "");
+      if (sortKey === "days")       return (daysSince(a.latest_action_date) ?? 0) > (daysSince(b.latest_action_date) ?? 0) ? -1 : 1;
+      if (sortKey === "introduced") return (a.introduced_date ?? "") < (b.introduced_date ?? "") ? -1 : 1;
+      if (sortKey === "sponsor")    return (a.sponsor_name ?? "").localeCompare(b.sponsor_name ?? "");
       return 0;
     });
   }, [bills, chamber, party, policy, minDays, search, sortKey, stateFilter]);
@@ -70,7 +65,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem", alignItems: "center" }}>
         <div style={{ position: "relative", flex: "1 1 200px" }}>
-          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#8b9198", fontSize: "14px" }}>🔍</span>
+          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#8b9198", fontSize: "14px" }}>&#128269;</span>
           <input
             type="text"
             placeholder="Search bills, sponsors, keywords"
