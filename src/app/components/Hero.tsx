@@ -53,10 +53,45 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
           </p>
 
           <div className="grid grid-cols-3 gap-3 mb-8 max-w-2xl">
-            <div
-              className="rounded-lg p-4"
-              style={{ background: "#161b22", border: "1px solid #30363d" }}
-            >
-              <div
-                className="font-black mb-1"
-                style={{ fontSize: "clamp(28px, 4vw, 40px)", color:
+            <div className="rounded-lg p-4" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+              <div className="font-black mb-1" style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#fff", lineHeight: 1 }}>
+                {totalBills.toLocaleString()}
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Bills introduced
+              </div>
+            </div>
+            <div className="rounded-lg p-4" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+              <div className="font-black mb-1" style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}>
+                0
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Received a hearing
+              </div>
+            </div>
+            <div className="rounded-lg p-4" style={{ background: "#161b22", border: "1px solid #30363d" }}>
+              <div className="font-black mb-1" style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}>
+                518
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
+                Days, longest cold case
+              </div>
+            </div>
+          </div>
+
+          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px", marginBottom: "1rem" }}>
+            These are the promises made to voters and the committees where they went to die.
+            Search by sponsor, party, policy area, or how long the bill has been ignored.
+          </p>
+
+          <div style={{ marginTop: "1.5rem" }}>
+            <Suspense fallback={null}>
+              <ZipLookup />
+            </Suspense>
+          </div>
+
+        </div>
+      </div>
+    </header>
+  );
+}
