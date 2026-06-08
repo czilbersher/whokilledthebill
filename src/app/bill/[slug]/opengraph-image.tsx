@@ -40,7 +40,7 @@ export default async function OGImage({
     return new ImageResponse(
       (
         <div style={{ width: 1200, height: 630, background: "#0d1117", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ fontSize: 48, color: "#e6edf3" }}>Bill not found</div>
+          <div style={{ fontSize: 48, color: "#e6edf3", display: "flex" }}>Bill not found</div>
         </div>
       ),
       { ...size }
@@ -56,20 +56,9 @@ export default async function OGImage({
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: 1200,
-          height: 630,
-          background: "#0d1117",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "48px",
-          fontFamily: "sans-serif",
-          borderTop: "16px solid #dc2626",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div style={{ width: 1200, height: 630, background: "#0d1117", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "48px", fontFamily: "sans-serif", borderTop: "16px solid #dc2626" }}>
+
+        <div style={{ display: "flex", alignItems: "center" }}>
           <div style={{ fontSize: 18, color: "#8b9198", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700 }}>
             WHO KILLED THE BILL?
           </div>
@@ -77,31 +66,31 @@ export default async function OGImage({
 
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ background: partyColor, color: "#ffffff", fontSize: 16, fontWeight: 700, padding: "6px 16px", borderRadius: "6px" }}>
+            <div style={{ background: partyColor, color: "#ffffff", fontSize: 16, fontWeight: 700, padding: "6px 16px", borderRadius: "6px", display: "flex" }}>
               {partyLabel}
             </div>
-            <div style={{ fontSize: 18, color: "#8b9198", fontWeight: 600 }}>
+            <div style={{ fontSize: 18, color: "#8b9198", fontWeight: 600, display: "flex" }}>
               {billType} {number}
             </div>
           </div>
-          <div style={{ fontSize: 52, fontWeight: 800, color: "#e6edf3", lineHeight: 1.1 }}>
+          <div style={{ fontSize: 48, fontWeight: 800, color: "#e6edf3", lineHeight: 1.1, display: "flex" }}>
             {title}
           </div>
-          <div style={{ fontSize: 20, color: "#8b9198" }}>
+          <div style={{ fontSize: 20, color: "#8b9198", display: "flex" }}>
             Sponsored by {sponsorName}
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
-            <div style={{ fontSize: 72, fontWeight: 900, color: "#f5c518", lineHeight: 1 }}>
+            <div style={{ fontSize: 72, fontWeight: 900, color: "#f5c518", lineHeight: 1, display: "flex" }}>
               {days.toLocaleString()}
             </div>
-            <div style={{ fontSize: 20, color: "#8b9198", fontWeight: 600 }}>
+            <div style={{ fontSize: 20, color: "#8b9198", fontWeight: 600, display: "flex" }}>
               days ignored. No hearing. No vote. No explanation.
             </div>
           </div>
-          <div style={{ fontSize: 18, color: "#30363d" }}>
+          <div style={{ fontSize: 18, color: "#30363d", display: "flex" }}>
             whokilledthebill.com
           </div>
         </div>
