@@ -122,4 +122,11 @@ export default function BillGrid({ bills, policyAreas }: Props) {
 
       {totalPages > 1 && (
         <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "2rem", flexWrap: "wrap" }}>
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page === 1 ? "not-allowed" : "pointer", opacity: page === 1 ? 0.5 : 1 }}>Previous</button>
+          <span style={{ padding: "8px 16px", color: "#8b9198" }}>Page {page} of {totalPages}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: "8px 16px", backgroundColor: "#161b22", border: "1px solid #30363d", borderRadius: "6px", color: "#e6edf3", cursor: page === totalPages ? "not-allowed" : "pointer", opacity: page === totalPages ? 0.5 : 1 }}>Next</button>
+        </div>
+      )}
+    </div>
+  );
+}
