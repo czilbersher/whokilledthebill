@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import BillCard from "./BillCard";
 import type { BillRow } from "@/types/db";
 
