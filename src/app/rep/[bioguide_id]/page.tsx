@@ -66,6 +66,7 @@ export default async function RepPage({ params }: Props) {
   function ShareButton() {
     return (
       
+        <a 
         href={`https://twitter.com/intent/tweet?text=${tweetText}`}
         target="_blank"
         rel="noreferrer"
