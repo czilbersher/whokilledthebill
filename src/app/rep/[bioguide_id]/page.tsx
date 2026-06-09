@@ -56,7 +56,9 @@ export default async function RepPage({ params }: Props) {
   const bills = abandonedBills;
   const rep = bills[0] as BillRow;
   const rawName = rep.sponsor_name ?? "Unknown Sponsor";
-  const sponsorName = rawName.replace(/\s*\[.*?\]\s*/g, "").trim();
+  const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
+const nameParts = nameNoTitle.split(",");
+const sponsorName = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
   const partyKey = rep.sponsor_party ?? "I";
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
   const borderColor = PARTY_BORDER[partyKey] ?? "#6b7280";
