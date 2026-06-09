@@ -151,7 +151,7 @@ export default function ShareModal({ bill, onClose }: { bill: BillRow; onClose: 
       onClick={onClose}
     >
       <div
-        style={{ background: "#fff", borderRadius: "12px", padding: "1.5rem", maxWidth: "480px", width: "100%", boxShadow: "0 4px 32px rgba(0,0,0,0.18)" }}
+       style={{ background: "#fff", borderRadius: "12px", padding: "1.5rem", maxWidth: "480px", width: "100%", boxShadow: "0 4px 32px rgba(0,0,0,0.18)", maxHeight: "90vh", overflowY: "auto" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
