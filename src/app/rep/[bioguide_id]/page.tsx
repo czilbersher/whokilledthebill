@@ -21,7 +21,7 @@ const PARTY_TEXT: Record<string, string> = {
   R: "#dc2626", D: "#3b82f6", I: "#6b7280",
 };
 
-function getGrade(abandonedCount: number, totalCount: number): { grade: string; color: string; verdict: string } {
+function getGrade(abandonedCount: number, totalCount: number) {
   if (totalCount === 0) return { grade: "N/A", color: "#6b7280", verdict: "No bills introduced" };
   const pct = (totalCount - abandonedCount) / totalCount;
   if (pct === 0) return { grade: "F", color: "#dc2626", verdict: "Failed to advance a single bill" };
@@ -78,41 +78,31 @@ export default async function RepPage({ params }: Props) {
 
   const total = totalCount ?? bills.length;
   const reportCard = getGrade(bills.length, total);
+  const abandonmentPct = Math.round((bills.length / total) * 100);
+  const receivedAction = total - bills.length;
 
-  const shareText = sponsorName + " introduced " + total + " bills in the 119th Congress. " + bills.length + " died with no hearing and no vote. Legislative Report Card grade: " + reportCard.grade + ". whokilledthebill.com/rep/" + bioguide_id;
+  const shareText = sponsorName + " introduced " + String(total) + " bills in the 119th Congress. " + String(bills.length) + " died with no hearing and no vote. Legislative Report Card grade: " + reportCard.grade + ". whokilledthebill.com/rep/" + bioguide_id;
   const tweetHref = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
   const photoUrl = "https://bioguide.congress.gov/bioguide/photo/" + bioguide_id[0] + "/" + bioguide_id + ".jpg";
 
   return (
     <div style={{ backgroundColor: "#f8f8f6", minHeight: "100vh" }}>
 
-      {/* Top nav bar */}
       <div style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d" }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
-            ← Back to all bills
+            Back to all bills
           </Link>
-          
-            href={tweetHref}
-            target="_blank"
-            rel="noreferrer"
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
-                                Share on X
+          <a href={tweetHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}>
+            Share on X
           </a>
         </div>
       </div>
 
-      {/* Header */}
       <div style={{ backgroundColor: "#161b22", borderBottom: "4px solid " + borderColor }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 1.5rem" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
-            <img
-              src={photoUrl}
-              alt={sponsorName}
-              width={100}
-              height={120}
-              style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #30363d" }}
-            />
+            <img src={photoUrl} alt={sponsorName} width={100} height={120} style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #30363d" }} />
             <div style={{ flex: 1, borderLeft: "0.5px solid #30363d", paddingLeft: "2rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
                 <div>
@@ -145,7 +135,6 @@ export default async function RepPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Report Card */}
       <div style={{ maxWidth: "64rem", margin: "1.5rem auto 0", padding: "0 1.5rem" }}>
         <div style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "1.5rem", display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
           <div style={{ textAlign: "center", minWidth: "80px" }}>
@@ -162,18 +151,17 @@ export default async function RepPage({ params }: Props) {
               </div>
               <div>
                 <div style={{ fontSize: "10px", color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>Received action</div>
-                <div style={{ fontSize: "22px", fontWeight: 900, color: "#dc2626" }}>{total - bills.length}</div>
+                <div style={{ fontSize: "22px", fontWeight: 900, color: "#dc2626" }}>{receivedAction}</div>
               </div>
               <div>
                 <div style={{ fontSize: "10px", color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>Abandonment rate</div>
-                <div style={{ fontSize: "22px", fontWeight: 900, color: "#dc2626" }}>{Math.round((bills.length / total) * 100)}%</div>
+                <div style={{ fontSize: "22px", fontWeight: 900, color: "#dc2626" }}>{abandonmentPct}%</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Abandonment banner */}
       <div style={{ maxWidth: "64rem", margin: "1rem auto 0", padding: "0 1.5rem" }}>
         <div style={{ backgroundColor: "#F9F3EE", border: "1px solid #DDC9B4", borderRadius: "6px", padding: "1rem 1.25rem" }}>
           <p style={{ fontSize: "14px", fontWeight: 700, color: "#dc2626", margin: 0 }}>100% abandonment rate</p>
@@ -181,7 +169,6 @@ export default async function RepPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Interactive bill list */}
       <RepBillList bills={bills as BillRow[]} topPolicies={topPolicies} />
 
     </div>
