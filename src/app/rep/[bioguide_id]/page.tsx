@@ -61,8 +61,8 @@ export default async function RepPage({ params }: Props) {
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
   const borderColor = PARTY_BORDER[partyKey] ?? "#6b7280";
   const partyTextColor = PARTY_TEXT[partyKey] ?? "#6b7280";
-  const district = rep.sponsor_district ? `-${rep.sponsor_district}` : "";
-  const location = rep.sponsor_state ? `${rep.sponsor_state}${district}` : "";
+  const district = rep.sponsor_district ? "-" + rep.sponsor_district : "";
+  const location = rep.sponsor_state ? rep.sponsor_state + district : "";
   const chamber = rep.origin_chamber === "Senate" ? "Senator" : "Representative";
 
   const policyCounts: Record<string, number> = {};
@@ -79,26 +79,9 @@ export default async function RepPage({ params }: Props) {
   const total = totalCount ?? bills.length;
   const reportCard = getGrade(bills.length, total);
 
-  const shareText = `${sponsorName} introduced ${total} bills in the 119th Congress. ${bills.length} died with no hearing and no vote. Legislative Report Card grade: ${reportCard.grade}. whokilledthebill.com/rep/${bioguide_id}`;
-  const tweetText = encodeURIComponent(shareText);
-
-  const photoUrl = `https://bioguide.congress.gov/bioguide/photo/${bioguide_id[0]}/${bioguide_id}.jpg`;
-
-  function ShareButton() {
-    return (
-      
-        href={`https://twitter.com/intent/tweet?text=${tweetText}`}
-        target="_blank"
-        rel="noreferrer"
-        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-        Share on X
-      </a>
-    );
-  }
+  const shareText = sponsorName + " introduced " + total + " bills in the 119th Congress. " + bills.length + " died with no hearing and no vote. Legislative Report Card grade: " + reportCard.grade + ". whokilledthebill.com/rep/" + bioguide_id;
+  const tweetHref = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
+  const photoUrl = "https://bioguide.congress.gov/bioguide/photo/" + bioguide_id[0] + "/" + bioguide_id + ".jpg";
 
   return (
     <div style={{ backgroundColor: "#f8f8f6", minHeight: "100vh" }}>
@@ -109,12 +92,22 @@ export default async function RepPage({ params }: Props) {
           <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
             ← Back to all bills
           </Link>
-          <ShareButton />
+          
+            href={tweetHref}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            Share on X
+          </a>
         </div>
       </div>
 
       {/* Header */}
-      <div style={{ backgroundColor: "#161b22", borderBottom: `4px solid ${borderColor}` }}>
+      <div style={{ backgroundColor: "#161b22", borderBottom: "4px solid " + borderColor }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 1.5rem" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
             <img
