@@ -19,6 +19,9 @@ export const metadata: Metadata = {
       "9,799 bills died in committee in the 119th Congress. No hearing. No vote. No accountability.",
     type: "website",
   },
+  verification: {
+    google: "IvR8jxtRSOqB4rqAeh9wCg_FpeCxmwp79YYVghMKkqk",
+  },
 };
 
 export default function RootLayout({
