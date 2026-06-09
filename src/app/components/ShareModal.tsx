@@ -98,7 +98,10 @@ export default function ShareModal({ bill, onClose }: { bill: BillRow; onClose: 
   const [downloading, setDownloading] = useState(false);
   const days = daysSince(bill.latest_action_date) ?? 0;
   const title = bill.title.length > 80 ? bill.title.slice(0, 80) + "..." : bill.title;
-  const sponsor = bill.sponsor_name ?? "Unknown Sponsor";
+  const rawSponsor = bill.sponsor_name ?? "Unknown Sponsor";
+const nameNoTitle = rawSponsor.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
+const nameParts = nameNoTitle.split(",");
+const sponsor = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
   const billId = (bill.bill_type?.toUpperCase() ?? "") + " " + bill.number;
 
   const shareText = billId + " abandoned for " + days + " days. No hearing. No vote. Who killed it? whokilledthebill.com";
