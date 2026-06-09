@@ -97,8 +97,7 @@ export default async function RepPage({ params }: Props) {
             target="_blank"
             rel="noreferrer"
             style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}
-          >
-                        Share on X
+                                Share on X
           </a>
         </div>
       </div>
