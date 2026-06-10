@@ -37,43 +37,30 @@ export default function BillCard({ bill }: { bill: BillRow }) {
 
   const billSlug = (bill.bill_type?.toLowerCase() ?? "") + "-" + bill.number;
 
-  function SponsorLink() {
-    if (!bill.sponsor_bioguide_id) return <span className="text-xs font-semibold" style={{ color: partyColor }}>{sponsorDisplay}</span>;
-    return (
-      <Link href={"/rep/" + bill.sponsor_bioguide_id} className="text-xs font-semibold hover:underline" style={{ color: partyColor }}>
-        {sponsorDisplay}
-      </Link>
-    );
-  }
-
-  function ShareButton() {
-    return (
-      <button
-        onClick={() => setShowShare(true)}
-        className="inline-flex items-center gap-1 text-xs transition-colors px-3 py-1 rounded"
-        style={{ background: "#21262d", color: "#8b9198", border: "1px solid #30363d" }}
-      >
-        Share
-      </button>
-    );
-  }
+  const legislationUrl = bill.legislation_url ?? "#";
 
   return (
     <>
-      <article className="rounded overflow-hidden flex flex-col" style={{ background: "#161b22", border: "1px solid #30363d", borderLeft: "4px solid #dc2626" }}>
+      <article
+        className="rounded overflow-hidden flex flex-col"
+        style={{ background: "#161b22", border: "1px solid #30363d", borderLeft: "4px solid #dc2626" }}
+      >
         <div className="px-3 py-2.5">
+
           <div className="flex justify-between items-start gap-2 mb-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="sr-only">Bill</span>
-              
-                href={bill.legislation_url ?? "#"}
-                target="_blank"
-                rel="noreferrer"
-                className="font-mono text-sm font-bold hover:underline transition-colors"
-                style={{ color: "#dc2626" }}
-              <a>
-                {bill.bill_type?.toUpperCase()} {bill.number}
-              </a>
+              <span className="font-mono text-sm font-bold" style={{ color: "#dc2626" }}>
+                
+                  href={legislationUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline"
+                  style={{ color: "#dc2626" }}
+                >
+                  {bill.bill_type?.toUpperCase()} {bill.number}
+                </a>
+              </span>
             </div>
             <DaysBadge date={bill.latest_action_date} />
           </div>
@@ -94,23 +81,43 @@ export default function BillCard({ bill }: { bill: BillRow }) {
 
           <div className="mt-2 flex items-center justify-between flex-wrap gap-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <SponsorLink />
+              {bill.sponsor_bioguide_id ? (
+                <Link
+                  href={"/rep/" + bill.sponsor_bioguide_id}
+                  className="text-xs font-semibold hover:underline"
+                  style={{ color: partyColor }}
+                >
+                  {sponsorDisplay}
+                </Link>
+              ) : (
+                <span className="text-xs font-semibold" style={{ color: partyColor }}>{sponsorDisplay}</span>
+              )}
               {bill.sponsor_state && (
-                <span className="inline-block px-2 py-0.5 rounded text-xs font-medium" style={{ background: "#21262d", color: "#60a5fa" }}>
+                <span
+                  className="inline-block px-2 py-0.5 rounded text-xs font-medium"
+                  style={{ background: "#21262d", color: "#60a5fa" }}
+                >
                   {bill.sponsor_state}
                 </span>
               )}
               {bill.policy_area && (
-                <button
+                <span
                   className="text-xs px-2 py-0.5 rounded font-medium"
                   style={{ background: "#21262d", color: "#60a5fa" }}
                 >
                   {bill.policy_area}
-                </button>
+                </span>
               )}
             </div>
-            <ShareButton bill={bill} />
+            <button
+              onClick={() => setShowShare(true)}
+              className="inline-flex items-center gap-1 text-xs transition-colors px-3 py-1 rounded"
+              style={{ background: "#21262d", color: "#8b9198", border: "1px solid #30363d" }}
+            >
+              Share
+            </button>
           </div>
+
         </div>
       </article>
       {showShare && <ShareModal bill={bill} onClose={() => setShowShare(false)} />}
