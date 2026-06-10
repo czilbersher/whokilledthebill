@@ -45,7 +45,7 @@ function DaysBadge({ date }: { date: string | null }) {
   if (days === null) return null;
   return (
     <span
-      className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-sm font-bold whitespace-nowrap"
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded border text-sm font-bold whitespace-nowrap" style={{ backgroundcolor: '#f9f3ee', bordercolor: '#ddc9b4', color: '#dc2626' }}
       style={{ background: "#1c1f24", border: "1px solid #f5c518", color: "#f5c518" }}
     >
       {days.toLocaleString()} days
