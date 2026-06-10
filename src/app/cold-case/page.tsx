@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 function daysSince(d: string | null) {
   if (!d) return 0;
