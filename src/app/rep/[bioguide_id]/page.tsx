@@ -93,7 +93,7 @@ const sponsorName = nameParts.length === 2 ? nameParts[1].trim() + " " + namePar
       <div style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d" }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
-            Back to all bills
+          &#8592; Back to all bills
           </Link>
           <a href={tweetHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}>
             Share on X
