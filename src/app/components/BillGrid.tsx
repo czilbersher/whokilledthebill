@@ -66,7 +66,7 @@ export default function BillGrid({ bills, policyAreas }: Props) {
   return (
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem", alignItems: "center" }}>
-        <div style={{ position: "relative", flex: "1 1 200px", maxwidth: "400px" }}>
+        <div style={{ position: "relative", flex: "1 1 200px", maxWidth: "400px" }}>
           <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#8b9198", fontSize: "14px" }}>&#128269;</span>
           <input
             type="text"

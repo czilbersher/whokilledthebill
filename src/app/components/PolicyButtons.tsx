@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const POLICY_BUTTONS = [
   { label: "Healthcare", value: "Health" },
@@ -12,16 +12,18 @@ const POLICY_BUTTONS = [
 ];
 
 export default function PolicyButtons() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const activePolicy = searchParams.get("policy") ?? "";
 
   function handleClick(value: string) {
-    if (activePolicy === value) {
-      router.push("/");
-    } else {
-      router.push("/?policy=" + encodeURIComponent(value));
-    }
+    const newUrl = activePolicy === value ? "/" : "/?policy=" + encodeURIComponent(value);
+    window.history.pushState(null, "", newUrl);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  }
+
+  function handleClear() {
+    window.history.pushState(null, "", "/");
+    window.dispatchEvent(new PopStateEvent("popstate"));
   }
 
   return (
@@ -32,7 +34,7 @@ export default function PolicyButtons() {
         </p>
         {activePolicy && (
           <button
-            onClick={() => router.push("/")}
+            onClick={handleClear}
             style={{ fontSize: "11px", color: "#dc2626", background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
           >
             Clear filter
