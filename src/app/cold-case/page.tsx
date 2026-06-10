@@ -70,6 +70,9 @@ Write only the four paragraphs. No headers. No bullet points. No title. Just the
     });
 
     const data = await response.json();
+    if (!response.ok) {
+      return "API error " + response.status + ": " + JSON.stringify(data);
+    }
     return data.content?.[0]?.text ?? "Narrative unavailable.";
   } catch (err) {
     console.error("Narrative generation failed:", err);
