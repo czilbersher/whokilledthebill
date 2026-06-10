@@ -84,9 +84,7 @@ export default async function ColdCasePage() {
     .select("*")
     .eq("is_current", true)
     .limit(1)
-    .single();
-
-  if (!coldCase) return notFound();
+    .single() as any;
 
   const slug = coldCase.bill_slug as string;
   const parts = slug.split("-");
