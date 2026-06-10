@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props) {
 
   if (!data || data.length === 0) return {};
 
-  const rawName = data[0].sponsor_name ?? "This member";
+  const rawName = (data[0] as { sponsor_name: string }).sponsor_name ?? "This member";
   const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
   const nameParts = nameNoTitle.split(",");
   const name = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
