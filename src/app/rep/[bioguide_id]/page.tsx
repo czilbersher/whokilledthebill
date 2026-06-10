@@ -33,6 +33,38 @@ function getGrade(abandonedCount: number, totalCount: number) {
 
 type Props = { params: Promise<{ bioguide_id: string }> };
 
+export async function generateMetadata({ params }: Props) {
+  const { bioguide_id } = await params;
+  const supabase = createServerSupabaseClient();
+
+  const [{ data }, { count }] = await Promise.all([
+    supabase
+      .from("bills")
+      .select("sponsor_name")
+      .eq("sponsor_bioguide_id", bioguide_id)
+      .eq("is_abandoned", true)
+      .limit(1),
+    supabase
+      .from("bills")
+      .select("*", { count: "exact", head: true })
+      .eq("sponsor_bioguide_id", bioguide_id)
+      .eq("is_abandoned", true),
+  ]);
+
+  if (!data || data.length === 0) return {};
+
+  const rawName = data[0].sponsor_name ?? "This member";
+  const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
+  const nameParts = nameNoTitle.split(",");
+  const name = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
+  const total = count ?? 0;
+
+  return {
+    title: name + " | Legislative Report Card | Who Killed the Bill?",
+    description: name + " introduced " + String(total) + " bills in the 119th Congress. Every one died in committee. No hearing. No vote. No explanation.",
+  };
+}
+
 export default async function RepPage({ params }: Props) {
   const { bioguide_id } = await params;
   const supabase = createServerSupabaseClient();
@@ -57,8 +89,8 @@ export default async function RepPage({ params }: Props) {
   const rep = bills[0] as BillRow;
   const rawName = rep.sponsor_name ?? "Unknown Sponsor";
   const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
-const nameParts = nameNoTitle.split(",");
-const sponsorName = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
+  const nameParts = nameNoTitle.split(",");
+  const sponsorName = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
   const partyKey = rep.sponsor_party ?? "I";
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
   const borderColor = PARTY_BORDER[partyKey] ?? "#6b7280";
@@ -93,7 +125,7 @@ const sponsorName = nameParts.length === 2 ? nameParts[1].trim() + " " + namePar
       <div style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d" }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/" style={{ color: "#e6edf3", textDecoration: "none", fontSize: "14px", fontWeight: 500 }}>
-          &#8592; Back to all bills
+            &#8592; Back to all bills
           </Link>
           <a href={tweetHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", backgroundColor: "#000", color: "#fff", fontSize: "13px", fontWeight: 600, borderRadius: "6px", textDecoration: "none", border: "0.5px solid #30363d" }}>
             Share on X
