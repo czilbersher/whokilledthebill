@@ -24,6 +24,14 @@ function DaysBadge({ date }: { date: string | null }) {
   );
 }
 
+function BillLink({ url, label }: { url: string; label: string }) {
+  return (
+    <Link href={url} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold hover:underline" style={{ color: "#dc2626" }}>
+      {label}
+    </Link>
+  );
+}
+
 export default function BillCard({ bill }: { bill: BillRow }) {
   const [showShare, setShowShare] = useState(false);
   const cause = getCauseOfDeath(bill);
@@ -34,10 +42,9 @@ export default function BillCard({ bill }: { bill: BillRow }) {
   const sponsorDisplay = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
 
   const partyColor = bill.sponsor_party === "R" ? "#dc2626" : bill.sponsor_party === "D" ? "#1a3a6b" : "#6b7280";
-
   const billSlug = (bill.bill_type?.toLowerCase() ?? "") + "-" + bill.number;
-
-  const legislationUrl = bill.legislation_url ?? "#";
+  const legislationUrl = bill.legislation_url ?? "/bill/" + billSlug;
+  const billLabel = (bill.bill_type?.toUpperCase() ?? "") + " " + bill.number;
 
   return (
     <>
@@ -50,17 +57,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <div className="flex justify-between items-start gap-2 mb-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="sr-only">Bill</span>
-              <span className="font-mono text-sm font-bold" style={{ color: "#dc2626" }}>
-                
-                  href={legislationUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:underline"
-                  style={{ color: "#dc2626" }}
-                <a>
-                  {bill.bill_type?.toUpperCase()} {bill.number}
-                </a>
-              </span>
+              <BillLink url={legislationUrl} label={billLabel} />
             </div>
             <DaysBadge date={bill.latest_action_date} />
           </div>
@@ -71,10 +68,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
             </h2>
           </Link>
 
-          <div
-            className="rounded px-3 py-2.5"
-            style={{ background: "#0d1117", border: "1px solid #30363d" }}
-          >
+          <div className="rounded px-3 py-2.5" style={{ background: "#0d1117", border: "1px solid #30363d" }}>
             <p className="text-sm font-bold" style={{ color: "#dc2626" }}>{cause.verdict}</p>
             <p className="mt-0.5 text-sm leading-snug" style={{ color: "#8b9198" }}>{cause.detail}</p>
           </div>
@@ -82,29 +76,19 @@ export default function BillCard({ bill }: { bill: BillRow }) {
           <div className="mt-2 flex items-center justify-between flex-wrap gap-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               {bill.sponsor_bioguide_id ? (
-                <Link
-                  href={"/rep/" + bill.sponsor_bioguide_id}
-                  className="text-xs font-semibold hover:underline"
-                  style={{ color: partyColor }}
-                >
+                <Link href={"/rep/" + bill.sponsor_bioguide_id} className="text-xs font-semibold hover:underline" style={{ color: partyColor }}>
                   {sponsorDisplay}
                 </Link>
               ) : (
                 <span className="text-xs font-semibold" style={{ color: partyColor }}>{sponsorDisplay}</span>
               )}
               {bill.sponsor_state && (
-                <span
-                  className="inline-block px-2 py-0.5 rounded text-xs font-medium"
-                  style={{ background: "#21262d", color: "#60a5fa" }}
-                >
+                <span className="inline-block px-2 py-0.5 rounded text-xs font-medium" style={{ background: "#21262d", color: "#60a5fa" }}>
                   {bill.sponsor_state}
                 </span>
               )}
               {bill.policy_area && (
-                <span
-                  className="text-xs px-2 py-0.5 rounded font-medium"
-                  style={{ background: "#21262d", color: "#60a5fa" }}
-                >
+                <span className="text-xs px-2 py-0.5 rounded font-medium" style={{ background: "#21262d", color: "#60a5fa" }}>
                   {bill.policy_area}
                 </span>
               )}
