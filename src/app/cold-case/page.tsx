@@ -63,7 +63,7 @@ Write only the four paragraphs. No headers. No bullet points. No title. Just the
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-5",
         max_tokens: 600,
         messages: [{ role: "user", content: prompt }],
       }),
