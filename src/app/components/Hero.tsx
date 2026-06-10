@@ -1,10 +1,20 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import ZipLookup from "@/app/components/ZipLookup";
 
 interface HeroProps {
   totalBills: number;
   abandonedBills: number;
 }
+
+const POLICY_BUTTONS = [
+  { label: "Healthcare", value: "Health" },
+  { label: "Housing", value: "Housing and Community Development" },
+  { label: "Education", value: "Education" },
+  { label: "Environment", value: "Environmental Protection" },
+  { label: "Economy", value: "Economics and Public Finance" },
+  { label: "Veterans", value: "Armed Forces and National Security" },
+];
 
 export default function Hero({ totalBills, abandonedBills }: HeroProps) {
   return (
@@ -79,10 +89,38 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             </div>
           </div>
 
-          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px", marginBottom: "1rem" }}>
+          <p className="max-w-2xl leading-relaxed" style={{ color: "#8b9198", fontSize: "15px", marginBottom: "1.25rem" }}>
             These are the promises made to voters and the committees where they went to die.
             Search by sponsor, party, policy area, or how long the bill has been ignored.
           </p>
+
+          <div style={{ marginBottom: "1.5rem" }}>
+            <p style={{ fontSize: "11px", color: "#8b9198", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.625rem" }}>
+              Browse by issue
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              {POLICY_BUTTONS.map((btn) => (
+                <Link
+                  key={btn.value}
+                  href={"/?policy=" + encodeURIComponent(btn.value)}
+                  style={{
+                    display: "inline-block",
+                    padding: "6px 14px",
+                    background: "#161b22",
+                    border: "1px solid #30363d",
+                    borderRadius: "6px",
+                    color: "#c9d1d9",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                    transition: "border-color 0.15s",
+                  }}
+                >
+                  {btn.label}
+                </Link>
+              ))}
+            </div>
+          </div>
 
           <div style={{ marginTop: "1.5rem" }}>
             <Suspense fallback={null}>
