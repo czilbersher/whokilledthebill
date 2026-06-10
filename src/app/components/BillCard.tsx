@@ -57,7 +57,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
                   rel="noreferrer"
                   className="hover:underline"
                   style={{ color: "#dc2626" }}
-                >
+                <a>
                   {bill.bill_type?.toUpperCase()} {bill.number}
                 </a>
               </span>
