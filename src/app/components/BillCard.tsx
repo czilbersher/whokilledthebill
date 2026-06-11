@@ -41,7 +41,7 @@ export default function BillCard({ bill }: { bill: BillRow }) {
   const nameParts = nameNoTitle.split(",");
   const sponsorDisplay = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
 
-  const partyColor = bill.sponsor_party === "R" ? "#dc2626" : bill.sponsor_party === "D" ? "#1a3a6b" : "#6b7280";
+  const partyColor = bill.sponsor_party === "R" ? "#dc2626" : bill.sponsor_party === "D" ? "#1a3a6b" : "#6b7280";const partyColor = bill.sponsor_party === "R" ? "#dc2626" : bill.sponsor_party === "D" ? "#3b82f6" : "#9ca3af";
   const billSlug = (bill.bill_type?.toLowerCase() ?? "") + "-" + bill.number;
   const legislationUrl = bill.legislation_url ?? "/bill/" + billSlug;
   const billLabel = (bill.bill_type?.toUpperCase() ?? "") + " " + bill.number;
