@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import RepBillList from "@/app/components/RepBillList";
+import PhotoLightbox from "@/app/components/PhotoLightbox";
 
 function daysSince(d: string | null) {
   if (!d) return 0;
@@ -136,7 +137,7 @@ export default async function RepPage({ params }: Props) {
       <div style={{ backgroundColor: "#161b22", borderBottom: "4px solid " + borderColor }}>
         <div style={{ maxWidth: "64rem", margin: "0 auto", padding: "2rem 1.5rem" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
-            <img src={photoUrl} alt={sponsorName} width={100} height={120} style={{ borderRadius: "4px", objectFit: "cover", flexShrink: 0, border: "1px solid #30363d" }} />
+         <PhotoLightbox src={photoUrl} alt={sponsorName} width={100} height={120} />
             <div style={{ flex: 1, borderLeft: "0.5px solid #30363d", paddingLeft: "2rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
                 <div>
