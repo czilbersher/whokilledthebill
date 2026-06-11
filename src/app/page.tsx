@@ -30,7 +30,7 @@ export default async function HomePage() {
       .not("policy_area", "is", null),
     supabase
       .from("cold_cases")
-      .select("*, bills(*)")
+      .select("*")
       .eq("is_current", true)
       .limit(1)
       .single(),
@@ -41,7 +41,19 @@ export default async function HomePage() {
   ].sort();
 
   const cc = coldCase as any;
-  const ccBill = cc?.bills as any;
+  const ccSlug = cc?.bill_slug as string ?? null;
+  const ccParts = ccSlug ? ccSlug.split("-") : null;
+  const ccBillType = ccParts ? ccParts[0] : null;
+  const ccNumber = ccParts ? ccParts.slice(1).join("-") : null;
+
+  const { data: ccBillData } = ccBillType && ccNumber ? await supabase
+    .from("bills")
+    .select("*")
+    .eq("bill_type", ccBillType)
+    .eq("number", ccNumber)
+    .limit(1) : { data: null };
+
+  const ccBill = ccBillData?.[0] as any ?? null;
 
   function daysSince(d: string | null) {
     if (!d) return 0;
