@@ -25,60 +25,6 @@ const PARTY_COLORS: Record<string, string> = {
   R: "#dc2626", D: "#3b82f6", I: "#6b7280",
 };
 
-async function generateNarrative(bill: BillRow, days: number): Promise<string> {
-  const sponsorRaw = bill.sponsor_name ?? "";
-  const nameNoTitle = sponsorRaw.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
-  const nameParts = nameNoTitle.split(",");
-  const sponsorName = nameParts.length === 2
-    ? nameParts[1].trim() + " " + nameParts[0].trim()
-    : nameNoTitle;
-
-  const prompt = `You are writing dramatic, punchy copy for a civic accountability website called WhoKilledTheBill.com. The site tracks bills that were introduced in Congress, referred to committee, and then buried without a hearing, vote, or explanation.
-
-Write a "Cold Case File" narrative for the following bill. The tone should be like a true crime cold case report — serious, specific, and outraged on behalf of citizens. Do NOT use flowery language. Do NOT use em dashes. Keep sentences short and punchy. Write in plain English that any American can understand.
-
-The narrative should have exactly four short paragraphs:
-1. What the bill would have done and who it would have helped (2-3 sentences)
-2. What happened to it — introduced, referred to committee, and then silence (2-3 sentences, include the exact number of days ignored)
-3. Why this matters — the human cost of inaction (2-3 sentences)
-4. A closing line asking who killed this bill
-
-Bill details:
-- Title: ${bill.title}
-- Bill type and number: ${bill.bill_type?.toUpperCase()} ${bill.number}
-- Sponsor: ${sponsorName}, ${PARTY_LABELS[bill.sponsor_party ?? "I"] ?? bill.sponsor_party} from ${bill.sponsor_state}
-- Policy area: ${bill.policy_area ?? "Unknown"}
-- Introduced: ${fmt(bill.introduced_date)}
-- Days ignored: ${days}
-- Last recorded action: ${bill.latest_action_text ?? "Referred to committee"}
-
-Write only the four paragraphs. No headers. No bullet points. No title. Just the narrative.`;
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 600,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      return "Narrative unavailable at this time.";
-    }
-    return data.content?.[0]?.text ?? "Narrative unavailable.";
-  } catch {
-    return "Narrative unavailable at this time.";
-  }
-}
-
 export default async function ColdCasePage() {
   const supabase = createServerSupabaseClient();
 
@@ -89,7 +35,10 @@ export default async function ColdCasePage() {
     .limit(1)
     .single() as any;
 
+  if (!coldCase) return notFound();
+
   const slug = coldCase.bill_slug as string;
+  const narrative = coldCase.narrative as string ?? "Narrative unavailable.";
   const parts = slug.split("-");
   const billType = parts[0];
   const number = parts.slice(1).join("-");
@@ -115,8 +64,6 @@ export default async function ColdCasePage() {
   const sponsorName = nameParts.length === 2
     ? nameParts[1].trim() + " " + nameParts[0].trim()
     : nameNoTitle;
-
-  const narrative = await generateNarrative(bill, days);
 
   const tweetText = encodeURIComponent(
     "Cold Case: " + bill.bill_type?.toUpperCase() + " " + bill.number + " was abandoned for " + days + " days. No hearing. No vote. Who killed it? whokilledthebill.com/cold-case"
