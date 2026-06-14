@@ -110,7 +110,7 @@ export default function RepBillList({ bills, topPolicies }: Props) {
                     {daysSince(bill.latest_action_date).toLocaleString()} days
                   </span>
                 </div>
-                <p className="bill-title" style={{ fontSize: "14px", color: "#dc2626", fontWeight: 600, marginBottom: "0.5rem", lineHeight: 1.4 }}>
+                <p className="bill-title" style={{ fontSize: "14px", color: "#111827", fontWeight: 700, marginBottom: "0.5rem", lineHeight: 1.4 }}>
                   {bill.title}
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
