@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import LetterGenerator from "@/app/components/LetterGenerator";
+import PhotoLightbox from "@/app/components/PhotoLightbox";
 
 function fmt(dateStr: string | null) {
   if (!dateStr) return "Unknown";
