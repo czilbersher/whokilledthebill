@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
+import LetterGenerator from "@/app/components/LetterGenerator";
 
 function fmt(dateStr: string | null) {
   if (!dateStr) return "Unknown";
@@ -141,8 +142,18 @@ export default async function BillPage({ params }: Props) {
           </div>
         </div>
 
+        <LetterGenerator
+          billTitle={bill.title ?? ""}
+          billType={bill.bill_type ?? ""}
+          billNumber={bill.number ?? ""}
+          sponsorName={sponsorName}
+          sponsorState={bill.sponsor_state ?? ""}
+          daysIgnored={days}
+          latestActionText={bill.latest_action_text ?? ""}
+        />
+
         {bill.legislation_url && (
-          <div style={{ textAlign: "center" }}>
+          <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
             <a href={bill.legislation_url} target="_blank" rel="noreferrer" style={{ fontSize: "14px", color: "#6b7280", textDecoration: "underline" }}>
               View on Congress.gov
             </a>
