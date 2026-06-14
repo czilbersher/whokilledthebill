@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 export default function Nav() {
   return (
     <header className="sticky top-0 z-50" style={{ background: "#161b22", borderBottom: "1px solid #30363d" }}>
@@ -21,6 +20,9 @@ export default function Nav() {
             </span>
           </Link>
           <nav className="flex items-center gap-6">
+            <Link href="/cold-case" className="text-sm font-bold transition-colors" style={{ color: "#dc2626" }}>
+              Cold Case
+            </Link>
             <Link href="/leaderboard" className="text-sm transition-colors" style={{ color: "#8b9198" }}>
               Leaderboard
             </Link>

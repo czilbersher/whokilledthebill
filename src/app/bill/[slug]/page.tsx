@@ -119,12 +119,11 @@ export default async function BillPage({ params }: Props) {
           <h2 style={{ fontSize: "12px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.75rem 0" }}>Sponsor</h2>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {bill.sponsor_bioguide_id && (
-              <img
+              <PhotoLightbox
                 src={"https://bioguide.congress.gov/bioguide/photo/" + bill.sponsor_bioguide_id[0] + "/" + bill.sponsor_bioguide_id + ".jpg"}
                 alt={sponsorName}
                 width={48}
                 height={58}
-                style={{ borderRadius: "4px", objectFit: "cover", border: "1px solid #e5e7eb" }}
               />
             )}
             <div>
