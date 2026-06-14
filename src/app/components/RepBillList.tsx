@@ -20,6 +20,24 @@ function billSlug(bill: BillRow) {
   return `${bill.bill_type}-${bill.number}`.toLowerCase();
 }
 
+function CongressLink({ url }: { url: string }) {
+  return (
+    <span
+      onClick={e => e.stopPropagation()}
+      style={{ marginLeft: "6px" }}
+    >
+      <Link
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        style={{ fontSize: "11px", color: "#1a3a6b", textDecoration: "underline", fontFamily: "sans-serif", fontWeight: 400 }}
+      >
+        Congress.gov &#8599;
+      </Link>
+    </span>
+  );
+}
+
 interface Props {
   bills: BillRow[];
   topPolicies: [string, number][];
@@ -85,15 +103,7 @@ export default function RepBillList({ bills, topPolicies }: Props) {
                   <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280" }}>
                     {bill.bill_type?.toUpperCase()} {bill.number}
                     {bill.legislation_url && (
-                      
-                        href={bill.legislation_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        style={{ marginLeft: "6px", fontSize: "11px", color: "#1a3a6b", textDecoration: "underline", fontFamily: "sans-serif", fontWeight: 400 }}
-                      >
-                        Congress.gov &#8599;
-                      </a>
+                      <CongressLink url={bill.legislation_url} />
                     )}
                   </span>
                   <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>
