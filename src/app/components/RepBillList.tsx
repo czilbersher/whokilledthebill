@@ -16,6 +16,10 @@ function fmt(dateStr: string | null) {
   });
 }
 
+function billSlug(bill: BillRow) {
+  return `${bill.bill_type}-${bill.number}`.toLowerCase();
+}
+
 interface Props {
   bills: BillRow[];
   topPolicies: [string, number][];
@@ -49,28 +53,69 @@ export default function RepBillList({ bills, topPolicies }: Props) {
           </select>
         </div>
 
+        <style>{`
+          .bill-card-link { text-decoration: none; display: block; }
+          .bill-card {
+            background-color: #fff;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #dc2626;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+          }
+          .bill-card:hover {
+            background-color: #F9F3EE;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          }
+          .bill-card:hover .bill-title {
+            text-decoration: underline;
+          }
+        `}</style>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {filtered.map((bill) => (
-            <div key={bill.id} style={{ backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb", borderLeft: "4px solid #dc2626", padding: "1rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
-                <a href={bill.legislation_url ?? "#"} target="_blank" rel="noreferrer" style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280", textDecoration: "none" }}>
-                  {bill.bill_type?.toUpperCase()} {bill.number}
-                </a>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>{daysSince(bill.latest_action_date).toLocaleString()} days</span>
+            <Link
+              key={bill.id}
+              href={`/bill/${billSlug(bill)}`}
+              className="bill-card-link"
+            >
+              <div className="bill-card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "#6b7280" }}>
+                    {bill.bill_type?.toUpperCase()} {bill.number}
+                    {bill.legislation_url && (
+                      
+                        href={bill.legislation_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        style={{ marginLeft: "6px", fontSize: "11px", color: "#1a3a6b", textDecoration: "underline", fontFamily: "sans-serif", fontWeight: 400 }}
+                      >
+                        Congress.gov &#8599;
+                      </a>
+                    )}
+                  </span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#dc2626", whiteSpace: "nowrap" }}>
+                    {daysSince(bill.latest_action_date).toLocaleString()} days
+                  </span>
+                </div>
+                <p className="bill-title" style={{ fontSize: "14px", color: "#dc2626", fontWeight: 600, marginBottom: "0.5rem", lineHeight: 1.4 }}>
+                  {bill.title}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
+                  {bill.policy_area && (
+                    <button
+                      onClick={e => { e.preventDefault(); e.stopPropagation(); setActivePolicy(bill.policy_area); }}
+                      style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+                    >
+                      {bill.policy_area}
+                    </button>
+                  )}
+                </div>
               </div>
-              <p style={{ fontSize: "14px", color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{bill.title}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
-                <span style={{ fontSize: "12px", color: "#6b7280" }}>Introduced {fmt(bill.introduced_date)}</span>
-                {bill.policy_area && (
-                  <button
-                    onClick={() => setActivePolicy(bill.policy_area)}
-                    style={{ fontSize: "12px", backgroundColor: "#f3f4f6", color: "#374151", padding: "2px 8px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-                  >
-                    {bill.policy_area}
-                  </button>
-                )}
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -85,7 +130,7 @@ export default function RepBillList({ bills, topPolicies }: Props) {
                 onClick={() => setActivePolicy(null)}
                 style={{ fontSize: "12px", color: "#dc2626", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, marginBottom: "0.25rem" }}
               >
-                ← Show all bills
+                &#8592; Show all bills
               </button>
             )}
             {topPolicies.map(([area, count]) => (
