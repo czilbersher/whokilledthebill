@@ -104,18 +104,10 @@ export default function ColdCaseCurator() {
     const days = daysSince(bill.latest_action_date);
     const narrative = await generateNarrative(bill, days);
 
-    await supabase
-      .from("cold_cases")
-      .update({ is_current: false })
-      .eq("is_current", true);
-
-    await supabase
-      .from("cold_cases")
-      .insert({
-        bill_slug: slug,
-        featured_week: new Date().toISOString().split("T")[0],
-        is_current: true,
-        narrative,
+    await fetch("/api/save-cold-case", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, narrative }),
       });
 
     setSelected(slug);
