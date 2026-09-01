@@ -78,11 +78,16 @@ export default async function HomePage() {
     ? cc.narrative.split("\n\n")[0]
     : null;
 
+  // Oldest abandoned bill drives the headline stat, so it stays true as days pass.
+  const oldest = (bills ?? [])[0] as { latest_action_date: string | null } | undefined;
+  const longestDays = oldest ? daysSince(oldest.latest_action_date) : 0;
+
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
       <Hero
         totalBills={totalCount ?? 0}
         abandonedBills={abandonedCount ?? 0}
+        longestDays={longestDays}
       />
 
       {cc && ccBill && (

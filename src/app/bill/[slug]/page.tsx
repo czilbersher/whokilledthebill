@@ -27,6 +27,50 @@ const PARTY_COLORS: Record<string, string> = {
 
 type Props = { params: Promise<{ slug: string }> };
 
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+
+  const parts = slug.split("-");
+  const billType = parts[0];
+  const number = parts.slice(1).join("-");
+
+  const supabase = createServerSupabaseClient();
+
+  const { data } = await supabase
+    .from("bills")
+    .select("title, bill_type, number, sponsor_name, latest_action_date")
+    .eq("bill_type", billType)
+    .eq("number", number)
+    .limit(1);
+
+  if (!data || data.length === 0) return {};
+
+  const bill = data[0] as BillRow;
+
+  const label = (bill.bill_type ?? "").toUpperCase() + " " + bill.number;
+  const rawTitle = bill.title ?? "Untitled bill";
+  const shortTitle = rawTitle.length > 90 ? rawTitle.slice(0, 87).trimEnd() + "..." : rawTitle;
+
+  const rawName = bill.sponsor_name ?? "";
+  const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
+  const nameParts = nameNoTitle.split(",");
+  const sponsor = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
+
+  const days = daysSince(bill.latest_action_date);
+
+  const title = label + ": " + shortTitle + " | Who Killed the Bill?";
+  const description =
+    label + " was introduced" + (sponsor ? " by " + sponsor : "") +
+    " and then left in committee for " + String(days) +
+    " days. No hearing. No vote. No explanation.";
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "article" },
+  };
+}
+
 export default async function BillPage({ params }: Props) {
   const { slug } = await params;
 

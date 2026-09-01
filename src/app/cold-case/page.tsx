@@ -3,6 +3,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 
+export const metadata = {
+  title: "Cold Case File | Who Killed the Bill?",
+  description:
+    "A closer look at a single bill left to die in committee: who introduced it, what it would have done, and how long it sat untouched.",
+  openGraph: { title: "Cold Case File | Who Killed the Bill?", description: "A closer look at a single bill left to die in committee: who introduced it, what it would have done, and how long it sat untouched.", type: "website" },
+};
+
 export const dynamic = "force-dynamic";
 
 function daysSince(d: string | null) {

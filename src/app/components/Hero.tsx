@@ -5,9 +5,10 @@ import PolicyButtons from "@/app/components/PolicyButtons";
 interface HeroProps {
   totalBills: number;
   abandonedBills: number;
+  longestDays: number;
 }
 
-export default function Hero({ totalBills, abandonedBills }: HeroProps) {
+export default function Hero({ totalBills, abandonedBills, longestDays }: HeroProps) {
   return (
     <header>
       <div
@@ -72,7 +73,7 @@ export default function Hero({ totalBills, abandonedBills }: HeroProps) {
             </div>
             <div className="rounded-lg p-4" style={{ background: "#161b22", border: "1px solid #30363d" }}>
               <div className="font-black mb-1" style={{ fontSize: "clamp(28px, 4vw, 40px)", color: "#dc2626", lineHeight: 1 }}>
-                518
+                {longestDays.toLocaleString()}
               </div>
               <div className="text-xs uppercase tracking-widest" style={{ color: "#8b9198" }}>
                 Days, longest cold case
