@@ -1,5 +1,12 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "Methodology | Who Killed the Bill?",
+  description:
+    "How we define an abandoned bill, where the data comes from (the official Congress.gov API), and how often it is refreshed.",
+  openGraph: { title: "Methodology | Who Killed the Bill?", description: "How we define an abandoned bill, where the data comes from (the official Congress.gov API), and how often it is refreshed.", type: "website" },
+};
+
 export default function MethodologyPage() {
   return (
     <div className="min-h-screen bg-[#f8f8f6]">

@@ -27,7 +27,7 @@ function DaysBadge({ date }: { date: string | null }) {
 function PartyBadge({ party }: { party: string | null }) {
   if (!party) return <span className="text-gray-400">—</span>;
   const color =
-    party === "R" ? "bg-red-50 text-red-700 border-red-200" :
+    party === "R" ? "text-red-700 bg-[#F9F3EE] border-[#DDC9B4]" :
     party === "D" ? "bg-blue-50 text-blue-700 border-blue-200" :
                     "bg-gray-100 text-gray-600 border-gray-300";
   return (

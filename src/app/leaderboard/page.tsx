@@ -3,6 +3,13 @@ import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import LeaderboardTable from "@/app/components/LeaderboardTable";
 
+export const metadata = {
+  title: "Leaderboard: Who Abandons the Most Bills | Who Killed the Bill?",
+  description:
+    "Every member of the 119th Congress ranked by how many of their own bills died in committee without a hearing or a vote.",
+  openGraph: { title: "Leaderboard: Who Abandons the Most Bills | Who Killed the Bill?", description: "Every member of the 119th Congress ranked by how many of their own bills died in committee without a hearing or a vote.", type: "website" },
+};
+
 export const revalidate = 3600;
 
 export default async function LeaderboardPage() {
