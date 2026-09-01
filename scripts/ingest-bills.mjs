@@ -13,7 +13,9 @@ import { createClient } from "@supabase/supabase-js";
 const CONGRESS_BASE = process.env.CONGRESS_API_BASE ?? "https://api.congress.gov/v3";
 const CONGRESS_KEY  = process.env.CONGRESS_API_KEY;
 const SUPABASE_URL  = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Writes need the service role key — RLS on `bills` rejects upserts made with
+// the anon key. Falls back to anon so a read-only local run still works.
+const SUPABASE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const CONGRESS       = 119;
 const BILL_TYPES     = ["hr", "s", "hjres", "sjres", "hres", "sres", "hconres", "sconres"];
@@ -25,7 +27,7 @@ const UPSERT_BATCH   = 50;    // rows per Supabase upsert call
 const LIST_PAUSE_MS  = 80;    // pause between list pages (gentle pacing)
 
 if (!CONGRESS_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("❌  Missing env vars — check .env.local");
+  console.error("❌  Missing env vars — need CONGRESS_API_KEY, NEXT_PUBLIC_SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.");
   process.exit(1);
 }
 
