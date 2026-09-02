@@ -25,6 +25,7 @@ const SKIP_DAYS      = 7;     // skip bills already ingested this week
 const MIN_ABANDONED  = 180;   // days since last action to be considered abandoned
 const UPSERT_BATCH   = 50;    // rows per Supabase upsert call
 const LIST_PAUSE_MS  = 80;    // pause between list pages (gentle pacing)
+const NET_RETRIES    = 6;     // retries for dropped sockets / DNS blips
 
 if (!CONGRESS_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
   console.error("❌  Missing env vars — need CONGRESS_API_KEY, NEXT_PUBLIC_SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.");
@@ -34,7 +35,7 @@ if (!CONGRESS_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ── Congress.gov fetch with exponential backoff on 429 ────────────────────────
+// ── Congress.gov fetch, retrying rate limits, 5xx, and network drops ──────────
 
 async function congressGet(path, params = {}) {
   const url = new URL(`${CONGRESS_BASE}${path}`);
@@ -43,14 +44,31 @@ async function congressGet(path, params = {}) {
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
 
   let delay = 2000;
+  let netTries = 0;
+
   for (;;) {
-    const res = await fetch(url.toString());
-    if (res.status === 429) {
-      process.stdout.write(`\n  ⚠  Rate limited — backing off ${delay / 1000}s `);
+    let res;
+    try {
+      res = await fetch(url.toString());
+    } catch (err) {
+      // A dropped socket throws instead of returning a status, so it would
+      // otherwise sail past the retry logic below and kill the whole run.
+      // Over ~7,000 requests against Congress.gov this is routine, not fatal.
+      if (++netTries > NET_RETRIES) throw err;
+      const why = err.cause?.code ?? err.message;
+      process.stdout.write(`\n  ⚠  Network error (${why}) — retry ${netTries}/${NET_RETRIES} in ${delay / 1000}s `);
       await sleep(delay);
       delay = Math.min(delay * 2, 60_000);
       continue;
     }
+
+    if (res.status === 429 || res.status >= 500) {
+      process.stdout.write(`\n  ⚠  HTTP ${res.status} — backing off ${delay / 1000}s `);
+      await sleep(delay);
+      delay = Math.min(delay * 2, 60_000);
+      continue;
+    }
+
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
     return res.json();
   }
