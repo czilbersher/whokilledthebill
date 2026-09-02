@@ -5,6 +5,7 @@ import { freshenNarrative } from "@/lib/narrative";
 import Hero from "@/app/components/Hero";
 import BillGrid from "@/app/components/BillGrid";
 import Link from "next/link";
+import { formatDate } from "@/lib/formatDate";
 
 export const revalidate = 3600;
 
@@ -83,11 +84,7 @@ export default async function HomePage() {
   // Show which week this case is for, so a returning visitor can tell at a
   // glance that it is current rather than something left up for months.
   const ccWeek = cc?.featured_week
-    ? new Date(cc.featured_week).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        timeZone: "UTC",
-      })
+    ? formatDate(cc.featured_week, { month: "long", day: "numeric" })
     : null;
 
   // Oldest abandoned bill drives the headline stat, so it stays true as days pass.
