@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { createServerSupabaseClient } from "@/lib/supabase";
+import { lastUpdatedLabel } from "@/lib/lastUpdated";
+
+export const revalidate = 3600;
 
 export const metadata = {
   title: "Methodology | Who Killed the Bill?",
@@ -7,7 +11,10 @@ export const metadata = {
   openGraph: { title: "Methodology | Who Killed the Bill?", description: "How we define an abandoned bill, where the data comes from (the official Congress.gov API), and how often it is refreshed.", type: "website" },
 };
 
-export default function MethodologyPage() {
+export default async function MethodologyPage() {
+  const supabase = createServerSupabaseClient();
+  const lastUpdated = await lastUpdatedLabel(supabase);
+
   return (
     <div className="min-h-screen bg-[#f8f8f6]">
       <div className="bg-white border-b border-gray-200">
@@ -21,7 +28,7 @@ export default function MethodologyPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Methodology</h1>
         <p className="text-gray-500 mb-2">How we define abandonment, where the data comes from, and what this site does and does not claim.</p>
-        <p className="text-sm font-medium text-red-600 mb-10">Data last updated: June 5, 2026</p>
+        <p className="text-sm font-medium text-red-600 mb-10">Data last updated: {lastUpdated}</p>
 
         <div className="space-y-8">
 

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase";
+import { lastUpdatedLabel } from "@/lib/lastUpdated";
 import Hero from "@/app/components/Hero";
 import BillGrid from "@/app/components/BillGrid";
 import Link from "next/link";
@@ -82,6 +83,8 @@ export default async function HomePage() {
   const oldest = (bills ?? [])[0] as { latest_action_date: string | null } | undefined;
   const longestDays = oldest ? daysSince(oldest.latest_action_date) : 0;
 
+  const lastUpdated = await lastUpdatedLabel(supabase);
+
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
       <Hero
@@ -161,7 +164,7 @@ export default async function HomePage() {
               <p>119th Congress</p>
               <p>Jan 3, 2025 &#8211; present</p>
               <p className="mt-1">Data: Congress.gov</p>
-              <p className="mt-1">Last updated: June 5, 2026</p>
+              <p className="mt-1">Last updated: {lastUpdated}</p>
             </div>
           </div>
         </div>
