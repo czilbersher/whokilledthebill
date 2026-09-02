@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { formatDate } from "@/lib/formatDate";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,12 +13,8 @@ function daysSince(d: string | null) {
   return Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000);
 }
 
-function fmt(dateStr: string | null) {
-  if (!dateStr) return "Unknown";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric",
-  });
-}
+const fmt = (dateStr: string | null) =>
+  formatDate(dateStr, { month: "long", day: "numeric", year: "numeric" });
 
 const PARTY_LABELS: Record<string, string> = {
   R: "Republican", D: "Democrat", I: "Independent",

@@ -4,13 +4,9 @@ import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import LetterGenerator from "@/app/components/LetterGenerator";
 import PhotoLightbox from "@/app/components/PhotoLightbox";
+import { formatDate } from "@/lib/formatDate";
 
-function fmt(dateStr: string | null) {
-  if (!dateStr) return "Unknown";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
-}
+const fmt = (dateStr: string | null) => formatDate(dateStr);
 
 function daysSince(d: string | null) {
   if (!d) return 0;

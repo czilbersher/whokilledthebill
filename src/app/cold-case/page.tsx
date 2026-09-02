@@ -3,6 +3,7 @@ import { freshenNarrative } from "@/lib/narrative";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
+import { formatDate } from "@/lib/formatDate";
 
 export const metadata = {
   title: "Cold Case File | Who Killed the Bill?",
@@ -18,12 +19,8 @@ function daysSince(d: string | null) {
   return Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000);
 }
 
-function fmt(dateStr: string | null) {
-  if (!dateStr) return "Unknown";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric",
-  });
-}
+const fmt = (dateStr: string | null) =>
+  formatDate(dateStr, { month: "long", day: "numeric", year: "numeric" });
 
 const PARTY_LABELS: Record<string, string> = {
   R: "Republican", D: "Democrat", I: "Independent",
@@ -97,7 +94,7 @@ export default async function ColdCasePage() {
 
         <div style={{ marginBottom: "2rem" }}>
           <div style={{ color: "#dc2626", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-            &#9888; Cold Case File &#8212; Week of {new Date(coldCase.featured_week).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+            &#9888; Cold Case File &#8212; Week of {fmt(coldCase.featured_week)}
           </div>
           <h1 style={{ color: "#e6edf3", fontSize: "22px", fontWeight: 700, lineHeight: 1.4, margin: "0 0 0.5rem 0" }}>
             {bill.title}

@@ -3,18 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
+import { formatDate } from "@/lib/formatDate";
 
 function daysSince(d: string | null) {
   if (!d) return 0;
   return Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000);
 }
 
-function fmt(dateStr: string | null) {
-  if (!dateStr) return "Unknown";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
-}
+const fmt = (dateStr: string | null) => formatDate(dateStr);
 
 function billSlug(bill: BillRow) {
   return `${bill.bill_type}-${bill.number}`.toLowerCase();

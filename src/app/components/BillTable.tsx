@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import type { BillRow } from "@/types/db";
+import { formatDate } from "@/lib/formatDate";
 
 const PARTY_LABEL: Record<string, string> = { R: "Republican", D: "Democrat", I: "Independent" };
 
@@ -203,9 +204,7 @@ export default function BillTable({ bills, policyAreas }: Props) {
                   {bill.policy_area ?? "—"}
                 </td>
                 <td className="px-4 py-3 text-slate-400 text-xs whitespace-nowrap font-mono">
-                  {bill.introduced_date
-                    ? new Date(bill.introduced_date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-                    : "—"}
+                  {bill.introduced_date ? formatDate(bill.introduced_date) : "—"}
                 </td>
                 <td className="px-4 py-3">
                   <DaysBadge date={bill.latest_action_date} />
