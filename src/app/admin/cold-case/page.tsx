@@ -35,7 +35,7 @@ Write a "Cold Case File" narrative for the following bill. The tone should be li
 
 The narrative should have exactly four short paragraphs:
 1. What the bill would have done and who it would have helped (2-3 sentences)
-2. What happened to it — introduced, referred to committee, and then silence (2-3 sentences, include the exact number of days ignored)
+2. What happened to it — introduced, referred to committee, and then silence (2-3 sentences). To state how long it has been ignored, write the literal placeholder {{days}} where the number belongs, e.g. "For {{days}} days, the committee has done nothing." Never write the number itself: this narrative is stored and the count keeps rising after you write it.
 3. Why this matters — the human cost of inaction (2-3 sentences)
 4. A closing line asking who killed this bill
 
@@ -45,7 +45,7 @@ Bill details:
 - Sponsor: ${sponsorName}, ${PARTY_LABELS[bill.sponsor_party ?? "I"] ?? bill.sponsor_party} from ${bill.sponsor_state}
 - Policy area: ${bill.policy_area ?? "Unknown"}
 - Introduced: ${fmt(bill.introduced_date)}
-- Days ignored: ${days}
+- Days ignored: ${days} (for your context only — write {{days}}, never this number)
 - Last recorded action: ${bill.latest_action_text ?? "Referred to committee"}
 
 Write only the four paragraphs. No headers. No bullet points. No title. Just the narrative.`;
