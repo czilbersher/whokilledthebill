@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase";
 import { lastUpdatedLabel } from "@/lib/lastUpdated";
+import { freshenNarrative } from "@/lib/narrative";
 import Hero from "@/app/components/Hero";
 import BillGrid from "@/app/components/BillGrid";
 import Link from "next/link";
@@ -76,7 +77,17 @@ export default async function HomePage() {
   })();
 
   const narrativeTeaser = cc?.narrative
-    ? cc.narrative.split("\n\n")[0]
+    ? freshenNarrative(cc.narrative.split("\n\n")[0], ccDays ?? 0)
+    : null;
+
+  // Show which week this case is for, so a returning visitor can tell at a
+  // glance that it is current rather than something left up for months.
+  const ccWeek = cc?.featured_week
+    ? new Date(cc.featured_week).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        timeZone: "UTC",
+      })
     : null;
 
   // Oldest abandoned bill drives the headline stat, so it stays true as days pass.
@@ -100,6 +111,11 @@ export default async function HomePage() {
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "1rem" }}>
               <div style={{ width: "8px", height: "8px", background: "#dc2626", borderRadius: "50%" }}></div>
               <span style={{ color: "#dc2626", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Cold Case of the Week</span>
+              {ccWeek && (
+                <span style={{ color: "#8b9198", fontSize: "11px", fontWeight: 500, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>
+                  Week of {ccWeek}
+                </span>
+              )}
               <div style={{ flex: 1, height: "1px", background: "#30363d" }}></div>
               <Link href="/cold-case" style={{ color: "#58a6ff", fontSize: "11px", textDecoration: "none" }}>Read the full case file &#8594;</Link>
             </div>

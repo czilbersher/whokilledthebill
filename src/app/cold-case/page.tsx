@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase";
+import { freshenNarrative } from "@/lib/narrative";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
@@ -45,7 +46,7 @@ export default async function ColdCasePage() {
   if (!coldCase) return notFound();
 
   const slug = coldCase.bill_slug as string;
-  const narrative = coldCase.narrative as string ?? "Narrative unavailable.";
+  const rawNarrative = coldCase.narrative as string ?? "Narrative unavailable.";
   const parts = slug.split("-");
   const billType = parts[0];
   const number = parts.slice(1).join("-");
@@ -61,6 +62,7 @@ export default async function ColdCasePage() {
 
   const bill = billData[0] as BillRow;
   const days = daysSince(bill.latest_action_date);
+  const narrative = freshenNarrative(rawNarrative, days);
   const partyKey = bill.sponsor_party ?? "I";
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
   const partyColor = PARTY_COLORS[partyKey] ?? "#6b7280";
