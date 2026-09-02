@@ -26,6 +26,7 @@ const MIN_ABANDONED  = 180;   // days since last action to be considered abandon
 const UPSERT_BATCH   = 50;    // rows per Supabase upsert call
 const LIST_PAUSE_MS  = 80;    // pause between list pages (gentle pacing)
 const NET_RETRIES    = 6;     // retries for dropped sockets / DNS blips
+const FLUSH_EVERY    = 250;   // write through to Supabase this often mid-type
 
 if (!CONGRESS_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
   console.error("❌  Missing env vars — need CONGRESS_API_KEY, NEXT_PUBLIC_SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.");
@@ -184,18 +185,32 @@ async function fetchDetailsBatch(candidates) {
     return true;
   });
 
-  const rows = [];
+  // Write through to Supabase as we go rather than holding everything until the
+  // end. HR alone is ~6,000 bills and runs first; if it dies at 95% with nothing
+  // flushed, the next night restarts from zero and rolls the same dice again.
+  // Flushing means every run makes durable progress even when it later fails.
+  let stored = 0;
+  let pending = [];
+
   for (let i = 0; i < unique.length; i += CONCURRENCY) {
     const chunk = unique.slice(i, i + CONCURRENCY);
     const settled = await Promise.allSettled(chunk.map(fetchDetail));
     for (const r of settled) {
-      if (r.status === "fulfilled" && r.value) rows.push(r.value);
+      if (r.status === "fulfilled" && r.value) pending.push(r.value);
     }
+
+    if (pending.length >= FLUSH_EVERY) {
+      stored += await upsertRows(pending);
+      pending = [];
+    }
+
     const done = Math.min(i + CONCURRENCY, unique.length);
-    process.stdout.write(`\r    details ${done}/${unique.length}   `);
+    process.stdout.write(`\r    details ${done}/${unique.length} (stored ${stored})   `);
   }
+
+  if (pending.length) stored += await upsertRows(pending);
   process.stdout.write("\n");
-  return rows;
+  return stored;
 }
 
 // ── Upsert rows to Supabase in batches ───────────────────────────────────────
@@ -215,9 +230,7 @@ async function upsertRows(rows) {
     const { error } = await supabase.from("bills").upsert(batch, { onConflict: "id" });
     if (error) throw new Error(`Upsert error: ${error.message}`);
     stored += batch.length;
-    process.stdout.write(`\r    upserted ${stored}/${unique.length}   `);
   }
-  process.stdout.write("\n");
   return stored;
 }
 
@@ -241,29 +254,38 @@ console.log(`  Skipping ${skipIds.size} bills already in DB (fetched < ${SKIP_DA
 let grandTotal    = 0;
 let grandSkipped  = 0;
 const typeResults = [];
+const failures    = [];
 
 for (const billType of BILL_TYPES) {
-  const candidates = await scanBillType(billType);
+  // One bill type blowing up shouldn't cost us the other seven. HR runs first
+  // and is the largest, so an unguarded throw there used to abandon the whole
+  // night's work.
+  try {
+    const candidates = await scanBillType(billType);
 
-  const fresh = candidates.filter((b) => !skipIds.has(billId(billType, b.number)));
-  const skipped = candidates.length - fresh.length;
-  grandSkipped += skipped;
+    const fresh = candidates.filter((b) => !skipIds.has(billId(billType, b.number)));
+    const skipped = candidates.length - fresh.length;
+    grandSkipped += skipped;
 
-  if (fresh.length === 0) {
-    if (skipped > 0) console.log(`    → all ${skipped} already in DB, skipping\n`);
-    else             console.log(`    → none found, skipping\n`);
-    typeResults.push({ type: billType, stored: 0, skipped });
-    continue;
+    if (fresh.length === 0) {
+      if (skipped > 0) console.log(`    → all ${skipped} already in DB, skipping\n`);
+      else             console.log(`    → none found, skipping\n`);
+      typeResults.push({ type: billType, stored: 0, skipped });
+      continue;
+    }
+
+    if (skipped > 0) console.log(`    (${skipped} already in DB, fetching ${fresh.length} new)`);
+
+    const stored  = await fetchDetailsBatch(fresh);
+    grandTotal   += stored;
+
+    typeResults.push({ type: billType, stored, skipped });
+    console.log(`    ✅  ${stored} ${billType.toUpperCase()} bills stored\n`);
+  } catch (err) {
+    failures.push({ type: billType, message: err.message });
+    typeResults.push({ type: billType, stored: 0, skipped: 0, failed: true });
+    console.error(`\n    ❌  ${billType.toUpperCase()} failed: ${err.message}\n`);
   }
-
-  if (skipped > 0) console.log(`    (${skipped} already in DB, fetching ${fresh.length} new)`);
-
-  const rows    = await fetchDetailsBatch(fresh);
-  const stored  = await upsertRows(rows);
-  grandTotal   += stored;
-
-  typeResults.push({ type: billType, stored, skipped });
-  console.log(`    ✅  ${stored} ${billType.toUpperCase()} bills stored\n`);
 }
 
 const elapsed = Math.round((Date.now() - t0) / 1000);
@@ -271,11 +293,12 @@ const mins    = Math.floor(elapsed / 60);
 const secs    = elapsed % 60;
 
 console.log("─".repeat(60));
-console.log(`✅  Ingest complete in ${mins}m ${secs}s\n`);
+console.log(`${failures.length ? "⚠️ " : "✅"}  Ingest finished in ${mins}m ${secs}s\n`);
 console.log("  Bill type  │  Stored  │  Skipped");
 console.log("  ─────────────────────────────────");
 for (const r of typeResults) {
-  console.log(`  ${r.type.toUpperCase().padEnd(9)}  │  ${String(r.stored).padStart(6)}  │  ${String(r.skipped).padStart(7)}`);
+  const mark = r.failed ? "  ❌" : "";
+  console.log(`  ${r.type.toUpperCase().padEnd(9)}  │  ${String(r.stored).padStart(6)}  │  ${String(r.skipped).padStart(7)}${mark}`);
 }
 
 const { count } = await supabase
@@ -285,3 +308,11 @@ const { count } = await supabase
 
 console.log(`\n  Total abandoned bills in database: ${count?.toLocaleString()}`);
 console.log(`  Run again any time — already-ingested bills are skipped.\n`);
+
+// Whatever succeeded is already written. Still exit non-zero so a persistent
+// problem surfaces instead of failing quietly night after night.
+if (failures.length) {
+  console.error(`❌  ${failures.length} bill type(s) failed:`);
+  for (const f of failures) console.error(`    ${f.type.toUpperCase()}: ${f.message}`);
+  process.exit(1);
+}
