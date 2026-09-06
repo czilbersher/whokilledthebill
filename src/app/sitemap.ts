@@ -2,6 +2,10 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 
 const SITE = "https://www.whokilledthebill.com";
 
+// Every request here pulls 10,000 rows to build ~10,342 URLs. Crawlers re-fetch
+// sitemap.xml often, so cache it for a day rather than rebuilding per hit.
+export const revalidate = 86400;
+
 type SitemapRow = {
   bill_type: string | null;
   number: string | null;

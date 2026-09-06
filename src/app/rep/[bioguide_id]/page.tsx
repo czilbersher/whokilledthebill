@@ -5,6 +5,11 @@ import type { BillRow } from "@/types/db";
 import RepBillList from "@/app/components/RepBillList";
 import PhotoLightbox from "@/app/components/PhotoLightbox";
 
+// There are 537 of these and they had no caching directive, so every crawler
+// hit rebuilt the page and its Supabase queries from scratch. A day matches the
+// nightly ingest: nothing upstream changes more often than that.
+export const revalidate = 86400;
+
 function daysSince(d: string | null) {
   if (!d) return 0;
   return Math.floor((Date.now() - new Date(d).getTime()) / 86_400_000);
