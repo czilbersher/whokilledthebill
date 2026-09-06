@@ -4,7 +4,10 @@ const SITE = "https://www.whokilledthebill.com";
 
 // Every request here pulls 10,000 rows to build ~10,342 URLs. Crawlers re-fetch
 // sitemap.xml often, so cache it for a day rather than rebuilding per hit.
+// fetchCache is needed for the same reason as the page routes: supabase-js goes
+// through fetch, which Next 16 does not cache by default.
 export const revalidate = 86400;
+export const fetchCache = "force-cache";
 
 type SitemapRow = {
   bill_type: string | null;
