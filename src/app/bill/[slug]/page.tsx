@@ -6,6 +6,12 @@ import LetterGenerator from "@/app/components/LetterGenerator";
 import PhotoLightbox from "@/app/components/PhotoLightbox";
 import { formatDate } from "@/lib/formatDate";
 
+// 9,799 of these went into the sitemap on 2026-09-01 and Google started
+// crawling all of them. With no caching directive each hit regenerated the
+// page, which is where the usage spike came from. A day matches the nightly
+// ingest: the underlying bill data cannot change more often than that.
+export const revalidate = 86400;
+
 const fmt = (dateStr: string | null) => formatDate(dateStr);
 
 function daysSince(d: string | null) {
