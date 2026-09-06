@@ -8,7 +8,12 @@ import PhotoLightbox from "@/app/components/PhotoLightbox";
 // There are 537 of these and they had no caching directive, so every crawler
 // hit rebuilt the page and its Supabase queries from scratch. A day matches the
 // nightly ingest: nothing upstream changes more often than that.
+//
+// fetchCache is required alongside it: fetch is not cached by default in
+// Next 16, and supabase-js queries are fetch calls, so revalidate on its own
+// left the route rendering dynamically. See bill/[slug]/page.tsx.
 export const revalidate = 86400;
+export const fetchCache = "force-cache";
 
 function daysSince(d: string | null) {
   if (!d) return 0;

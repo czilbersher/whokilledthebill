@@ -10,7 +10,14 @@ import { formatDate } from "@/lib/formatDate";
 // crawling all of them. With no caching directive each hit regenerated the
 // page, which is where the usage spike came from. A day matches the nightly
 // ingest: the underlying bill data cannot change more often than that.
+//
+// fetchCache is the load-bearing half. Per node_modules/next/dist/docs
+// ("Caching and Revalidating"), fetch is NOT cached by default in Next 16, and
+// supabase-js queries are fetch calls — so the route rendered dynamically and
+// revalidate alone did nothing. revalidate sets how often to regenerate; it
+// cannot cache data that was never cacheable.
 export const revalidate = 86400;
+export const fetchCache = "force-cache";
 
 const fmt = (dateStr: string | null) => formatDate(dateStr);
 
