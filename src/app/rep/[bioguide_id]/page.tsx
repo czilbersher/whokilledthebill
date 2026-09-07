@@ -2,7 +2,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import RepBillList from "@/app/components/RepBillList";
-import PhotoLightbox from "@/app/components/PhotoLightbox";import { getRepBills } from "@/lib/queries";
+import PhotoLightbox from "@/app/components/PhotoLightbox";
+import { getRepBills } from "@/lib/queries";
+import { createServerSupabaseClient } from "@/lib/supabase";
+
+// Enumerating the params is what moves this route from rendered-per-request to
+// prerendered — the difference between X-Vercel-Cache MISS and PRERENDER, and
+// the reason three earlier cache-directive fixes had nothing to act on.
 export async function generateStaticParams() {
   const supabase = createServerSupabaseClient();
   const { data } = await supabase
@@ -12,17 +18,15 @@ export async function generateStaticParams() {
     .not("sponsor_bioguide_id", "is", null)
     .limit(10_000);
 
+  // The typed client infers `never` for the selected column here, so narrow the
+  // row shape explicitly rather than with a type predicate over `never`.
+  const rows = (data ?? []) as { sponsor_bioguide_id: string | null }[];
   const bioguideIds = new Set(
-    (data ?? [])
-      .map(({ sponsor_bioguide_id }) => sponsor_bioguide_id)
-      .filter((id): id is string => Boolean(id)),
+    rows.map((r) => r.sponsor_bioguide_id).filter((id): id is string => Boolean(id))
   );
 
   return Array.from(bioguideIds).map((bioguide_id) => ({ bioguide_id }));
 }
-
-
-import { createServerSupabaseClient } from "@/lib/supabase";
 
 // 537 of these, crawled alongside the bill pages. The query is cached in
 // lib/queries.ts — see the note there for why the two earlier attempts failed.

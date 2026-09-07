@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import LetterGenerator from "@/app/components/LetterGenerator";
-import PhotoLightbox from "@/app/components/PhotoLightbox";import { formatDate } from "@/lib/formatDate";
+import PhotoLightbox from "@/app/components/PhotoLightbox";
+import { formatDate } from "@/lib/formatDate";
 import { getBillBySlugParts } from "@/lib/queries";
 import { createServerSupabaseClient } from "@/lib/supabase";
 
