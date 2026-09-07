@@ -1,19 +1,13 @@
-import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import RepBillList from "@/app/components/RepBillList";
 import PhotoLightbox from "@/app/components/PhotoLightbox";
+import { getRepBills } from "@/lib/queries";
 
-// There are 537 of these and they had no caching directive, so every crawler
-// hit rebuilt the page and its Supabase queries from scratch. A day matches the
-// nightly ingest: nothing upstream changes more often than that.
-//
-// fetchCache is required alongside it: fetch is not cached by default in
-// Next 16, and supabase-js queries are fetch calls, so revalidate on its own
-// left the route rendering dynamically. See bill/[slug]/page.tsx.
+// 537 of these, crawled alongside the bill pages. The query is cached in
+// lib/queries.ts — see the note there for why the two earlier attempts failed.
 export const revalidate = 86400;
-export const fetchCache = "force-cache";
 
 function daysSince(d: string | null) {
   if (!d) return 0;
@@ -46,25 +40,11 @@ type Props = { params: Promise<{ bioguide_id: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { bioguide_id } = await params;
-  const supabase = createServerSupabaseClient();
+  const { bills } = await getRepBills(bioguide_id);
+  if (bills.length === 0) return {};
 
-  const [{ data }, { count }] = await Promise.all([
-    supabase
-      .from("bills")
-      .select("sponsor_name")
-      .eq("sponsor_bioguide_id", bioguide_id)
-      .eq("is_abandoned", true)
-      .limit(1),
-    supabase
-      .from("bills")
-      .select("*", { count: "exact", head: true })
-      .eq("sponsor_bioguide_id", bioguide_id)
-      .eq("is_abandoned", true),
-  ]);
-
-  if (!data || data.length === 0) return {};
-
-  const rawName = (data[0] as { sponsor_name: string }).sponsor_name ?? "This member";
+  const count = bills.length;
+  const rawName = bills[0].sponsor_name ?? "This member";
   const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();
   const nameParts = nameNoTitle.split(",");
   const name = nameParts.length === 2 ? nameParts[1].trim() + " " + nameParts[0].trim() : nameNoTitle;
@@ -78,25 +58,9 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function RepPage({ params }: Props) {
   const { bioguide_id } = await params;
-  const supabase = createServerSupabaseClient();
+  const { bills, totalCount } = await getRepBills(bioguide_id);
+  if (bills.length === 0) return notFound();
 
-  const [{ data: abandonedBills }, { count: totalCount }] = await Promise.all([
-    supabase
-      .from("bills")
-      .select("*")
-      .eq("sponsor_bioguide_id", bioguide_id)
-      .eq("is_abandoned", true)
-      .order("latest_action_date", { ascending: true })
-      .limit(10000),
-    supabase
-      .from("bills")
-      .select("*", { count: "exact", head: true })
-      .eq("sponsor_bioguide_id", bioguide_id),
-  ]);
-
-  if (!abandonedBills || abandonedBills.length === 0) return notFound();
-
-  const bills = abandonedBills;
   const rep = bills[0] as BillRow;
   const rawName = rep.sponsor_name ?? "Unknown Sponsor";
   const nameNoTitle = rawName.replace(/\s*\[.*?\]\s*/g, "").replace(/^(Rep\.|Sen\.|Del\.)\s*/i, "").trim();

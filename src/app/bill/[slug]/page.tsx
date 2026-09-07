@@ -1,23 +1,15 @@
-import { createServerSupabaseClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { BillRow } from "@/types/db";
 import LetterGenerator from "@/app/components/LetterGenerator";
 import PhotoLightbox from "@/app/components/PhotoLightbox";
 import { formatDate } from "@/lib/formatDate";
+import { getBillBySlugParts } from "@/lib/queries";
 
-// 9,799 of these went into the sitemap on 2026-09-01 and Google started
-// crawling all of them. With no caching directive each hit regenerated the
-// page, which is where the usage spike came from. A day matches the nightly
-// ingest: the underlying bill data cannot change more often than that.
-//
-// fetchCache is the load-bearing half. Per node_modules/next/dist/docs
-// ("Caching and Revalidating"), fetch is NOT cached by default in Next 16, and
-// supabase-js queries are fetch calls — so the route rendered dynamically and
-// revalidate alone did nothing. revalidate sets how often to regenerate; it
-// cannot cache data that was never cacheable.
+// 9,799 of these went into the sitemap on 2026-09-01 and Google began crawling
+// all of them, which is where the Vercel usage came from. The query itself is
+// cached in lib/queries.ts — see the note there for why revalidate and
+// fetchCache both failed and unstable_cache is the documented answer.
 export const revalidate = 86400;
-export const fetchCache = "force-cache";
 
 const fmt = (dateStr: string | null) => formatDate(dateStr);
 
@@ -43,18 +35,8 @@ export async function generateMetadata({ params }: Props) {
   const billType = parts[0];
   const number = parts.slice(1).join("-");
 
-  const supabase = createServerSupabaseClient();
-
-  const { data } = await supabase
-    .from("bills")
-    .select("title, bill_type, number, sponsor_name, latest_action_date")
-    .eq("bill_type", billType)
-    .eq("number", number)
-    .limit(1);
-
-  if (!data || data.length === 0) return {};
-
-  const bill = data[0] as BillRow;
+  const bill = await getBillBySlugParts(billType, number);
+  if (!bill) return {};
 
   const label = (bill.bill_type ?? "").toUpperCase() + " " + bill.number;
   const rawTitle = bill.title ?? "Untitled bill";
@@ -87,18 +69,9 @@ export default async function BillPage({ params }: Props) {
   const billType = parts[0];
   const number = parts.slice(1).join("-");
 
-  const supabase = createServerSupabaseClient();
+  const bill = await getBillBySlugParts(billType, number);
+  if (!bill) return notFound();
 
-  const { data } = await supabase
-    .from("bills")
-    .select("*")
-    .eq("bill_type", billType)
-    .eq("number", number)
-    .limit(1);
-
-  if (!data || data.length === 0) return notFound();
-
-  const bill = data[0] as BillRow;
   const days = daysSince(bill.latest_action_date);
   const partyKey = bill.sponsor_party ?? "I";
   const partyLabel = PARTY_LABELS[partyKey] ?? partyKey;
