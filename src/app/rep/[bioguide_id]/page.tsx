@@ -2,8 +2,27 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BillRow } from "@/types/db";
 import RepBillList from "@/app/components/RepBillList";
-import PhotoLightbox from "@/app/components/PhotoLightbox";
-import { getRepBills } from "@/lib/queries";
+import PhotoLightbox from "@/app/components/PhotoLightbox";import { getRepBills } from "@/lib/queries";
+export async function generateStaticParams() {
+  const supabase = createServerSupabaseClient();
+  const { data } = await supabase
+    .from("bills")
+    .select("sponsor_bioguide_id")
+    .eq("is_abandoned", true)
+    .not("sponsor_bioguide_id", "is", null)
+    .limit(10_000);
+
+  const bioguideIds = new Set(
+    (data ?? [])
+      .map(({ sponsor_bioguide_id }) => sponsor_bioguide_id)
+      .filter((id): id is string => Boolean(id)),
+  );
+
+  return Array.from(bioguideIds).map((bioguide_id) => ({ bioguide_id }));
+}
+
+
+import { createServerSupabaseClient } from "@/lib/supabase";
 
 // 537 of these, crawled alongside the bill pages. The query is cached in
 // lib/queries.ts — see the note there for why the two earlier attempts failed.
