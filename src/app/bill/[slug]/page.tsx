@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import LetterGenerator from "@/app/components/LetterGenerator";
-import PhotoLightbox from "@/app/components/PhotoLightbox";
-import { formatDate } from "@/lib/formatDate";
+import PhotoLightbox from "@/app/components/PhotoLightbox";import { formatDate } from "@/lib/formatDate";
 import { getBillBySlugParts } from "@/lib/queries";
+import { createServerSupabaseClient } from "@/lib/supabase";
 
 // 9,799 of these went into the sitemap on 2026-09-01 and Google began crawling
 // all of them, which is where the Vercel usage came from. The query itself is
@@ -23,8 +23,24 @@ const PARTY_LABELS: Record<string, string> = {
 };
 
 const PARTY_COLORS: Record<string, string> = {
-  R: "#dc2626", D: "#3b82f6", I: "#6b7280",
-};
+  R: "#dc2626", D: "#3b82f6", I: "#6b7280",};
+
+
+export async function generateStaticParams() {
+  const supabase = createServerSupabaseClient();
+  const { data } = await supabase
+    .from("bills")
+    .select("bill_type, number")
+    .eq("is_abandoned", true)
+    .limit(10_000);
+
+  return (data ?? []).map(({ bill_type, number }) => ({
+    slug: `${bill_type}-${number}`,
+  }));
+}
+
+
+
 
 type Props = { params: Promise<{ slug: string }> };
 
