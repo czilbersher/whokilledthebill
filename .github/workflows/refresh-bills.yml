@@ -7,7 +7,9 @@ name: Refresh bill data
 
 on:
   schedule:
-    - cron: "0 7 * * *" # 07:00 UTC daily (~3am ET)
+    - cron: "0 7 * * 0" # 07:00 UTC Sundays (~3am ET). Weekly is plenty: a bill
+                          # needs 180+ days of silence to qualify, and fewer
+                          # runs means fewer chances to email about a blip.
   workflow_dispatch: # lets you run it by hand from the Actions tab
 
 jobs:
